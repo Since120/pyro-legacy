@@ -1,0 +1,27 @@
+{
+	"name": "@pyro/prisma",
+	"version": "1.0.0",
+	"description": "Prisma database client for Pyro",
+	"main": "dist/index.js",
+	"module": "dist/index.mjs",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsup src/index.ts --format cjs,esm --dts",
+		"prisma": "prisma",
+		"db:generate": "prisma generate",
+		"db:migrate": "prisma migrate deploy",
+		"db:studio": "prisma studio",
+		"lint": "pnpm exec eslint ."
+	},
+	"dependencies": {
+		"@prisma/client": "^6.3.1",
+		"prisma": "^6.3.1"
+	},
+	"devDependencies": {
+		"tsup": "^8.0.1",
+		"typescript": "^5.2.2"
+	}
+}

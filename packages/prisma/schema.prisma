@@ -1,0 +1,42 @@
+
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String    @id @default(cuid())
+  discordId           String    @unique
+  username            String
+  discriminator       String?
+  avatar              String?
+  guilds              String[]  @default([])
+  discordAccessToken  String?
+  discordRefreshToken String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @default(now()) @updatedAt
+}
+
+model Category {
+  id                    String   @id @default(cuid())
+  guild_id      String   @default("default_guild")
+  name                  String
+  categoryType          String
+  isVisible             Boolean  @default(true)
+  trackingActive        Boolean  @default(false)   
+  sendSetup             Boolean  @default(false)
+  allowedRoles          String[] @default([])
+  lastUsage             DateTime?
+  totalSecondsInCateg   Int      @default(0)
+  discordCategoryId     String?
+  deletedInDiscord      Boolean  @default(false)
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @default(now()) @updatedAt
+}

@@ -1,0 +1,108 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthResponse {
+  accessToken: String!
+  user: User!
+}
+
+type Category {
+  allowedRoles: [String!]!
+  categoryType: String!
+  createdAt: DateTime!
+  deletedInDiscord: Boolean!
+  discordCategoryId: String
+  guild_id: String!
+  id: ID!
+  isVisible: Boolean!
+  lastUsage: DateTime
+  name: String!
+  sendSetup: Boolean!
+  totalSecondsInCateg: Int!
+  trackingActive: Boolean!
+  updatedAt: DateTime!
+}
+
+input CreateCategoryInput {
+  allowedRoles: [String!]! = []
+  categoryType: String!
+  discordCategoryId: String
+  guild_id: String! = "default_guild"
+  isVisible: Boolean! = true
+  name: String!
+  sendSetup: Boolean! = false
+  trackingActive: Boolean! = false
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type DiscordRole {
+  color: Int!
+  guild_id: String!
+  hoist: Boolean!
+  icon: String
+  id: ID!
+  managed: Boolean!
+  mentionable: Boolean!
+  name: String!
+  permissions: String!
+  position: Int!
+  tags: String
+  unicode_emoji: String
+}
+
+type Mutation {
+  createCategory(createCategoryInput: CreateCategoryInput!): Category!
+  removeCategory(id: ID!): Category!
+  updateCategory(updateCategoryInput: UpdateCategoryInput!): Category!
+
+  """Validiert einen JWT Token"""
+  validateToken(token: String!): AuthResponse
+}
+
+type Query {
+  categories(guild_id: String! = "default_guild"): [Category!]!
+  category(id: ID!): Category
+  isAuthenticated: Boolean!
+
+  """Gibt den aktuell eingeloggten Benutzer zurück"""
+  me: User
+  role(guild_id: String!, id: ID!): DiscordRole
+  roles(guild_id: String!): [DiscordRole!]!
+}
+
+type Subscription {
+  categoryCreated: Category!
+  categoryRemoved: Category!
+  categoryUpdated: Category!
+  roleCreated: DiscordRole
+  roleDeleted: DiscordRole
+  roleUpdated: DiscordRole
+}
+
+input UpdateCategoryInput {
+  allowedRoles: [String!] = []
+  categoryType: String
+  discordCategoryId: String
+  guild_id: String = "default_guild"
+  id: ID!
+  isVisible: Boolean = true
+  name: String
+  sendSetup: Boolean = false
+  trackingActive: Boolean = false
+}
+
+type User {
+  avatar: String
+  createdAt: DateTime!
+  discordId: String!
+  discriminator: String
+  guilds: [String!]!
+  id: ID!
+  updatedAt: DateTime!
+  username: String!
+}
