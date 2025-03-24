@@ -3,7 +3,6 @@
 import { ApolloClient, InMemoryCache, createHttpLink, from, ApolloLink } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { setContext } from '@apollo/client/link/context';
-import { getAuthToken } from '@/lib/auth';
 
 // Log outgoing requests (for debug purposes)
 const loggerLink = new ApolloLink((operation, forward) => {
@@ -60,24 +59,16 @@ const httpLink = createHttpLink({
   }
 });
 
-// Auth header link
+// Auth header link - verwendet automatisch das HttpOnly-Cookie
 const authLink = setContext((_, { headers }) => {
-  // Get the token
-  const token = getAuthToken();
-  console.log('Apollo Client: Token vorhanden:', !!token);
+  // Keine manuellen Token-Manipulationen mehr nötig,
+  // da das HttpOnly-Cookie automatisch gesendet wird
   
-  // Detailliertere Logging zur Fehlerbehebung
-  if (token) {
-    const shortToken = token.substring(0, 15) + '...';
-    console.log('Token-Fragment:', shortToken);
-  }
+  console.log('Apollo Client: Token wird als Cookie mitgesendet');
   
   // Return the headers to the context so httpLink can read them
   return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : '',
-    }
+    headers
   };
 });
 

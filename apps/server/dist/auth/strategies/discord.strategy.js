@@ -20,18 +20,19 @@ let DiscordStrategy = class DiscordStrategy extends (0, passport_1.PassportStrat
             clientID: process.env.DISCORD_CLIENT_ID,
             clientSecret: process.env.DISCORD_CLIENT_SECRET,
             callbackURL: process.env.DISCORD_REDIRECT_URI,
-            scope: ['identify', 'guilds'],
+            scope: ['identify', 'guilds', 'email'],
         });
         this.authService = authService;
     }
     async validate(accessToken, refreshToken, profile) {
-        const { id: discordId, username, discriminator, avatar } = profile;
+        const { id: discordId, username, discriminator, avatar, email } = profile;
         const guilds = profile.guilds ? profile.guilds.map(g => g.id) : [];
         return this.authService.validateUser({
             discordId,
             username,
             discriminator,
             avatar,
+            email,
             guilds,
             accessToken,
             refreshToken,

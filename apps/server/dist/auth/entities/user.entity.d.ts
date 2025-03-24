@@ -4,6 +4,7 @@ export declare class User {
     username: string;
     discriminator: string | null;
     avatar: string | null;
+    email: string | null;
     guilds: string[];
     createdAt: Date;
     updatedAt: Date;

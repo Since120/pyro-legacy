@@ -2,6 +2,7 @@
 
 import type * as React from 'react';
 import RouterLink from 'next/link';
+import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
@@ -31,6 +32,11 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
     logout();
   };
   
+  // Generiere die Avatar-URL basierend auf der Discord-ID und Avatar-ID
+  const avatarUrl = user?.avatar && user?.discordId
+    ? `https://cdn.discordapp.com/avatars/${user.discordId}/${user.avatar}.png`
+    : undefined;
+  
   return (
     <Popover
       anchorEl={anchorEl}
@@ -40,11 +46,25 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
       slotProps={{ paper: { sx: { width: '280px' } } }}
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
     >
-      <Box sx={{ p: 2 }}>
-        <Typography variant="subtitle1">{user?.username || 'User'}</Typography>
-        <Typography color="text.secondary" variant="body2">
-          {user?.discriminator ? `#${user.discriminator}` : ''}
-        </Typography>
+      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Avatar
+          src={avatarUrl}
+          alt={user?.username || 'User'}
+          sx={{ width: 40, height: 40 }}
+        />
+        <Box>
+          <Typography variant="subtitle1">{user?.username || 'User'}</Typography>
+          {user?.discriminator && user.discriminator !== "0" && (
+            <Typography color="text.secondary" variant="body2">
+              #{user.discriminator}
+            </Typography>
+          )}
+          {user?.email && (
+            <Typography color="text.secondary" variant="body2" sx={{ wordBreak: 'break-word' }}>
+              {user.email}
+            </Typography>
+          )}
+        </Box>
       </Box>
       <Divider />
       <List sx={{ p: 1 }}>

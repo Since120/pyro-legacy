@@ -9,6 +9,7 @@ interface UserData {
   username: string;
   discriminator?: string;
   avatar?: string;
+  email?: string;
   guilds: string[];
   accessToken: string;
   refreshToken: string;
@@ -37,6 +38,7 @@ export class AuthService {
           username: userData.username,
           discriminator: userData.discriminator,
           avatar: userData.avatar,
+          email: userData.email,
           guilds: userData.guilds,
           // Discord OAuth credentials are stored securely but not exposed in GraphQL
           discordAccessToken: userData.accessToken,
@@ -51,6 +53,7 @@ export class AuthService {
           username: userData.username,
           discriminator: userData.discriminator,
           avatar: userData.avatar,
+          email: userData.email,
           guilds: userData.guilds,
           discordAccessToken: userData.accessToken,
           discordRefreshToken: userData.refreshToken,
@@ -88,5 +91,10 @@ export class AuthService {
     } catch (error) {
       return null;
     }
+  }
+  
+  getAvatarUrl(user: User): string | null {
+    if (!user.avatar || !user.discordId) return null;
+    return `https://cdn.discordapp.com/avatars/${user.discordId}/${user.avatar}.png`;
   }
 }

@@ -11,7 +11,7 @@ export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
       clientID: process.env.DISCORD_CLIENT_ID,
       clientSecret: process.env.DISCORD_CLIENT_SECRET,
       callbackURL: process.env.DISCORD_REDIRECT_URI,
-      scope: ['identify', 'guilds'],
+      scope: ['identify', 'guilds', 'email'],
     });
   }
 
@@ -20,7 +20,7 @@ export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
     refreshToken: string,
     profile: any,
   ) {
-    const { id: discordId, username, discriminator, avatar } = profile;
+    const { id: discordId, username, discriminator, avatar, email } = profile;
     const guilds = profile.guilds ? profile.guilds.map(g => g.id) : [];
 
     return this.authService.validateUser({
@@ -28,6 +28,7 @@ export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
       username,
       discriminator,
       avatar,
+      email,
       guilds,
       accessToken,
       refreshToken,

@@ -30,6 +30,7 @@ let AuthService = class AuthService {
                     username: userData.username,
                     discriminator: userData.discriminator,
                     avatar: userData.avatar,
+                    email: userData.email,
                     guilds: userData.guilds,
                     discordAccessToken: userData.accessToken,
                     discordRefreshToken: userData.refreshToken,
@@ -43,6 +44,7 @@ let AuthService = class AuthService {
                     username: userData.username,
                     discriminator: userData.discriminator,
                     avatar: userData.avatar,
+                    email: userData.email,
                     guilds: userData.guilds,
                     discordAccessToken: userData.accessToken,
                     discordRefreshToken: userData.refreshToken,
@@ -75,6 +77,11 @@ let AuthService = class AuthService {
         catch (error) {
             return null;
         }
+    }
+    getAvatarUrl(user) {
+        if (!user.avatar || !user.discordId)
+            return null;
+        return `https://cdn.discordapp.com/avatars/${user.discordId}/${user.avatar}.png`;
     }
 };
 exports.AuthService = AuthService;

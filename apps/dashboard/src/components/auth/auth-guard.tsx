@@ -1,9 +1,8 @@
 'use client';
 
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'next/navigation';
-import { paths } from '@/paths';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -13,52 +12,44 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const { isAuthenticated, user, loading: isLoading } = useAuth();
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
+  const [redirectAttempted, setRedirectAttempted] = useState(false);
 
   useEffect(() => {
-    // Prüfe, ob kürzlich eine Weiterleitung stattgefunden hat, um Mehrfach-Prüfungen zu vermeiden
-    const hasRecentAuthCheck = () => {
-      const timestamp = localStorage.getItem('auth_guard_check');
-      if (!timestamp) return false;
-      
-      const now = Date.now();
-      const diff = now - parseInt(timestamp);
-      return diff < 10000; // Weniger als 10 Sekunden
-    };
+    // Prüfe, ob die Authentifizierung gerade läuft
+    const loginInProgress = localStorage.getItem('auth_login_in_progress') === 'true';
     
-    // Wenn bereits geprüft wurde oder erst kürzlich, keine weitere Prüfung
-    if (hasRecentAuthCheck()) {
-      console.log('AuthGuard - Kürzlich bereits geprüft, überspringe Prüfung');
+    // Wenn bereits geprüft wurde oder Anmeldung läuft, nichts tun
+    if (!isLoading && (isAuthenticated || loginInProgress)) {
       setIsChecking(false);
       return;
     }
     
+    // Nur einmalig umleiten pro Mount
+    if (redirectAttempted) return;
+
     // Verzögerung, um Race Conditions zu vermeiden
     const timeoutId = setTimeout(() => {
       console.log('AuthGuard - Auth Status:', { isAuthenticated, user, isLoading });
       
-      if (!isLoading) {
-        if (!isAuthenticated && !user) {
-          console.log('AuthGuard - Nicht authentifiziert, leite zur Login-Seite weiter');
-          
-          // Setze Zeitstempel für die Prüfung
-          localStorage.setItem('auth_guard_check', Date.now().toString());
-          
-          // Weiterleitung mit Next.js Router und Fallback mit direkter Navigation
-          try {
-            router.push('/auth/login');
-          } catch (e) {
-            console.error('Router-Navigation fehlgeschlagen, versuche direkten Redirect');
-            window.location.href = '/auth/login';
-          }
-        } else {
-          console.log('AuthGuard - Authentifizierung erfolgreich');
-          setIsChecking(false);
-        }
+      if (!isLoading && !isAuthenticated && !user) {
+        console.log('AuthGuard - Nicht authentifiziert, leite zur Login-Seite weiter');
+        
+        // Markiere Umleitung als versucht
+        setRedirectAttempted(true);
+        
+        // Sicherheitsspeicherung des Versuchs
+        localStorage.setItem('auth_guard_check', Date.now().toString());
+        
+        // Weiterleitung zur Login-Seite
+        router.push('/auth/login');
+      } else {
+        console.log('AuthGuard - Authentifizierung erfolgreich oder in Bearbeitung');
+        setIsChecking(false);
       }
-    }, 1000);
+    }, 1000); // 1 Sekunde Verzögerung
 
     return () => clearTimeout(timeoutId);
-  }, [isAuthenticated, isLoading, user, router]);
+  }, [isAuthenticated, isLoading, user, router, redirectAttempted]);
 
   if (isLoading || isChecking) {
     return (

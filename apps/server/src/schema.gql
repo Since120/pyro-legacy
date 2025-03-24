@@ -101,6 +101,7 @@ type User {
   createdAt: DateTime!
   discordId: String!
   discriminator: String
+  email: String
   guilds: [String!]!
   id: ID!
   updatedAt: DateTime!

@@ -6,6 +6,7 @@ interface UserData {
     username: string;
     discriminator?: string;
     avatar?: string;
+    email?: string;
     guilds: string[];
     accessToken: string;
     refreshToken: string;
@@ -22,5 +23,6 @@ export declare class AuthService {
         user: User;
     }>;
     validateToken(token: string): any;
+    getAvatarUrl(user: User): string | null;
 }
 export {};

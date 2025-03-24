@@ -1,23 +1,39 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { AUTH_TOKEN_KEY } from './lib/auth';
 
+// Konsistenter Cookie-Name über die gesamte Anwendung hinweg
+const AUTH_COOKIE_NAME = 'pyro_auth_token';
+
+/**
+ * Middleware für die Authentifizierungsprüfung und Weiterleitungen.
+ * Nutzt das HttpOnly-Cookie, das vom NestJS-Server gesetzt wird.
+ */
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get(AUTH_TOKEN_KEY)?.value;
+  // Auth-Status aus dem Cookie lesen
+  const authCookie = request.cookies.get(AUTH_COOKIE_NAME);
+  const isAuthenticated = !!authCookie?.value;
+  
+  // Aktuelle Route analysieren
   const isAuthRoute = request.nextUrl.pathname.startsWith('/auth');
   const isDashboardRoute = request.nextUrl.pathname.startsWith('/dashboard');
-  
-  // If trying to access dashboard without a token, redirect to login
-  if (isDashboardRoute && !token) {
+  const isLoginRoute = request.nextUrl.pathname === '/auth/login';
+
+  console.log(`MIDDLEWARE: ${request.nextUrl.pathname}, Authentifiziert: ${isAuthenticated}`);
+
+  // 1. Geschützte Dashboard-Routen erfordern Authentifizierung
+  if (isDashboardRoute && !isAuthenticated) {
+    console.log('MIDDLEWARE: Nicht authentifiziert - Weiterleitung zu /auth/signin');
     return NextResponse.redirect(new URL('/auth/signin', request.url));
   }
-  
-  // If trying to access auth routes with a token, redirect to dashboard
-  // Exception for the callback route which handles the token
-  if (isAuthRoute && token && request.nextUrl.pathname !== '/auth/callback') {
+
+  // 2. Authentifizierte Benutzer auf Auth-Routen zum Dashboard weiterleiten
+  // (außer für den Login-Endpunkt, den jeder besuchen darf)
+  if (isAuthRoute && isAuthenticated && !isLoginRoute) {
+    console.log('MIDDLEWARE: Bereits authentifiziert - Weiterleitung zum Dashboard');
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
-  
+
+  // 3. Allen anderen Anfragen erlauben, normal fortzufahren
   return NextResponse.next();
 }
 

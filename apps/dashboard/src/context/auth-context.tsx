@@ -1,13 +1,15 @@
-import { useApolloClient, useMutation } from '@apollo/client';
+import { useApolloClient } from '@apollo/client';
 import { gql } from '@apollo/client';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getAuthToken, removeAuthToken, setAuthToken } from '@/lib/auth';
+import { checkAuthentication, logout as authLogout } from '@/lib/auth';
 
 export interface User {
   id: string;
+  discordId: string;
   username: string;
   discriminator: string | null;
   avatar: string | null;
+  email: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -16,7 +18,6 @@ export interface AuthContextType {
   user: User | null;
   loading: boolean;
   isAuthenticated: boolean;
-  login: (token: string) => Promise<{ data?: { me: User }; error?: string }>;
   logout: () => void;
 }
 
@@ -24,7 +25,6 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   isAuthenticated: false,
-  login: () => Promise.resolve({ data: undefined, error: 'Not implemented' }),
   logout: () => {},
 });
 
@@ -32,18 +32,25 @@ export const ME_QUERY = gql`
   query Me {
     me {
       id
+      discordId
       username
       discriminator
       avatar
+      email
       createdAt
       updatedAt
     }
   }
 `;
 
+/**
+ * AuthProvider: Ein vereinfachter Context-Provider für die Authentifizierung.
+ * Verwendet serverseitige Authentifizierung mit HttpOnly-Cookies.
+ */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const client = useApolloClient();
 
   // Funktion zum Abrufen des Benutzerprofils
@@ -54,8 +61,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         query: ME_QUERY,
         fetchPolicy: 'network-only', // Wichtig: keine Cache-Nutzung
       });
-
-      console.log('ME_QUERY completed:', data);
 
       if (errors) {
         console.error('Fehler beim Abrufen des Benutzerprofils:', errors);
@@ -76,75 +81,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Login-Funktion
-  const login = async (token: string) => {
-    console.log('Login-Funktion aufgerufen mit Token');
-    setAuthToken(token);
-    localStorage.setItem('auth_login_in_progress', 'true');
-    
-    try {
-      const result = await fetchUser();
-      localStorage.removeItem('auth_login_in_progress');
-      
-      // Nach erfolgreicher Anmeldung sofort Cache löschen, um alte Daten zu entfernen
-      if (result.data?.me) {
-        await client.resetStore();
-      }
-      
-      return result;
-    } catch (error) {
-      localStorage.removeItem('auth_login_in_progress');
-      console.error('Login-Fehler:', error);
-      return { error: error instanceof Error ? error.message : 'Ein unerwarteter Fehler ist aufgetreten' };
-    }
-  };
-
   // Logout-Funktion
   const logout = () => {
-    console.log('Logout ausgeführt');
-    removeAuthToken();
+    console.log('Logout wird ausgeführt');
     setUser(null);
-    // Cache zurücksetzen nach Logout
-    client.resetStore().catch(console.error);
+    setIsAuthenticated(false);
+    // Token-Cookie über die API löschen lassen
+    authLogout();
   };
 
-  // Beim ersten Laden prüfen, ob ein Token vorhanden ist
+  // Bei Komponenteninitialisierung Authentifizierung prüfen
   useEffect(() => {
-    const token = getAuthToken();
-    
-    if (token) {
-      console.log('Vorhandenes Token gefunden, prüfe Authentifizierung');
-      fetchUser()
-        .then((result) => {
-          if (result.error) {
-            console.error('Fehler bei bestehender Authentifizierung:', result.error);
-            // Wenn Authentifizierung fehlschlägt, Token entfernen
-            removeAuthToken();
-          } else {
-            console.log('Benutzer erfolgreich authentifiziert');
-          }
-        })
-        .catch((err) => {
-          console.error('Unerwarteter Fehler bei der Authentifizierungsprüfung:', err);
-          removeAuthToken();
-        })
-        .finally(() => {
-          setLoading(false);
-          // Entferne alle möglichen Login-Process-Flags
-          localStorage.removeItem('auth_login_in_progress');
-        });
-    } else {
-      setLoading(false);
-    }
-    
-    // Cleanup
-    return () => {
-      // Keine zusätzlichen Aufräumarbeiten erforderlich
+    const verifyAuth = async () => {
+      try {
+        // Authentifizierungsstatus vom Server prüfen
+        const isAuth = await checkAuthentication();
+        
+        if (isAuth) {
+          // Wenn authentifiziert, Benutzerdaten laden
+          const result = await fetchUser();
+          setIsAuthenticated(!!result.data?.me);
+          setUser(result.data?.me || null);
+        } else {
+          setIsAuthenticated(false);
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Fehler beim Prüfen der Authentifizierung:', error);
+        setIsAuthenticated(false);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
     };
-  }, []);
 
-  // Berechne isAuthenticated basierend auf Vorhandensein von user
-  const isAuthenticated = !!user;
+    verifyAuth();
+  }, []);
 
   return (
     <AuthContext.Provider
@@ -152,7 +124,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         loading,
         isAuthenticated,
-        login,
         logout,
       }}
     >

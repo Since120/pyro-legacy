@@ -1,119 +1,104 @@
 'use client';
 
-export const AUTH_TOKEN_KEY = 'pyro_auth_token';
+/**
+ * Client-seitige Authentifizierungshilfsfunktionen.
+ * 
+ * Diese Bibliothek ist minimalistisch, da die eigentliche Authentifizierung
+ * serverseitig durch das NestJS-Backend mit HttpOnly-Cookies erfolgt.
+ */
 
-// Kombinierte Funktion für robustere Token-Speicherung
-export function getAuthToken(): string | null {
-  // Zuerst Cookie versuchen
-  const cookieToken = getCookie(AUTH_TOKEN_KEY);
-  if (cookieToken) return cookieToken;
-  
-  // Fallback zu localStorage
-  if (typeof window !== 'undefined') {
-    try {
-      return localStorage.getItem(AUTH_TOKEN_KEY);
-    } catch (e) {
-      console.error('Fehler beim Zugriff auf localStorage:', e);
-    }
-  }
-  
-  return null;
-}
+// Konstanten
+export const AUTH_COOKIE_NAME = 'pyro_auth_token';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/graphql', '') || 'http://localhost:3333';
 
-// Set auth token in cookies with expiration
-export function setAuthToken(token: string, expiresInDays = 7): void {
-  if (typeof window === 'undefined') return;
-  
-  // In Cookie speichern
-  const expires = new Date();
-  expires.setDate(expires.getDate() + expiresInDays);
-  setCookie(AUTH_TOKEN_KEY, token, { expires });
-  
-  // Auch in localStorage speichern als Backup
+/**
+ * Prüft, ob der Benutzer authentifiziert ist, indem eine API-Anfrage gestellt wird.
+ * 
+ * Dies ist sicherer als lokale Cookie-Prüfungen, da das HttpOnly-Cookie automatisch
+ * durch den Browser bei der Anfrage mitgesendet wird.
+ */
+export async function checkAuthentication(): Promise<boolean> {
   try {
-    localStorage.setItem(AUTH_TOKEN_KEY, token);
-  } catch (e) {
-    console.error('Fehler beim Speichern im localStorage:', e);
-  }
-  
-  console.log('Token wurde gespeichert');
-}
-
-// Remove auth token from cookies and localStorage
-export function removeAuthToken(): void {
-  if (typeof window === 'undefined') return;
-  
-  // Aus Cookie löschen
-  deleteCookie(AUTH_TOKEN_KEY);
-  
-  // Aus localStorage löschen
-  try {
-    localStorage.removeItem(AUTH_TOKEN_KEY);
-  } catch (e) {
-    console.error('Fehler beim Entfernen aus localStorage:', e);
-  }
-}
-
-// Generic cookie helpers with improved error handling
-export function getCookie(name: string): string | null {
-  if (typeof document === 'undefined') return null;
-  
-  try {
-    const cookies = document.cookie.split(';');
-    for (const cookie of cookies) {
-      const [cookieName, cookieValue] = cookie.trim().split('=');
-      if (cookieName === name) {
-        return decodeURIComponent(cookieValue);
-      }
-    }
-  } catch (e) {
-    console.error('Fehler beim Lesen des Cookies:', e);
-  }
-  
-  return null;
-}
-
-export function setCookie(
-  name: string, 
-  value: string, 
-  options: { 
-    expires?: Date; 
-    path?: string; 
-    secure?: boolean; 
-    sameSite?: 'strict' | 'lax' | 'none' 
-  } = {}
-): void {
-  if (typeof document === 'undefined') return;
-  
-  try {
-    const { expires, path = '/', secure = true, sameSite = 'lax' } = options;
+    console.log('AUTH: Prüfe Authentifizierung über API');
+    console.log('AUTH: API URL:', API_BASE_URL);
     
-    let cookie = `${name}=${encodeURIComponent(value)}; path=${path}`;
+    const response = await fetch(`${API_BASE_URL}/auth/check`, {
+      method: 'GET',
+      credentials: 'include', // Wichtig: sendet Cookies mit
+    });
     
-    if (expires) {
-      cookie += `; expires=${expires.toUTCString()}`;
+    const isAuth = response.ok;
+    console.log('AUTH: Authentifizierungsstatus:', isAuth, 'HTTP Status:', response.status);
+    
+    if (!isAuth) {
+      console.log('AUTH: Nicht authentifiziert, versuche /me Query über GraphQL');
+      
+      // Alternative Authentifizierungsprüfung über GraphQL
+      const graphqlResponse = await fetch(`${API_BASE_URL}/graphql`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          query: `query { me { id username } }`
+        })
+      });
+      
+      const result = await graphqlResponse.json();
+      console.log('AUTH: GraphQL Authentifizierungsergebnis:', result);
+      
+      return !!result.data?.me;
     }
     
-    if (secure) {
-      cookie += '; secure';
-    }
-    
-    cookie += `; sameSite=${sameSite}`;
-    
-    document.cookie = cookie;
-    console.log(`Cookie '${name}' gesetzt`);
-  } catch (e) {
-    console.error('Fehler beim Setzen des Cookies:', e);
+    return isAuth;
+  } catch (error) {
+    console.error('AUTH: Fehler bei der Authentifizierungsprüfung:', error);
+    return false;
   }
 }
 
-export function deleteCookie(name: string, path = '/'): void {
-  if (typeof document === 'undefined') return;
-  
+/**
+ * Leitet den Benutzer zur Login-Seite weiter.
+ */
+export function redirectToLogin(): void {
+  window.location.href = '/auth/login';
+}
+
+/**
+ * Leitet den Benutzer zum Dashboard weiter.
+ */
+export function redirectToDashboard(): void {
+  window.location.href = '/dashboard';
+}
+
+/**
+ * Führt einen Logout durch, indem eine Anfrage an die Logout-API gesendet wird.
+ * Der Server löscht das HttpOnly-Cookie.
+ */
+export async function logout(): Promise<void> {
   try {
-    document.cookie = `${name}=; path=${path}; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-    console.log(`Cookie '${name}' gelöscht`);
-  } catch (e) {
-    console.error('Fehler beim Löschen des Cookies:', e);
+    console.log('AUTH: Logout-Prozess gestartet');
+    
+    // Zunächst zum Logout-Endpunkt des Servers navigieren, 
+    // um das HttpOnly-Cookie zu löschen
+    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+      method: 'GET',
+      credentials: 'include', // Wichtig für Cookies
+    });
+    
+    // Wenn der Server-Logout erfolgreich war, zur Anmeldeseite weiterleiten
+    if (response.ok) {
+      console.log('AUTH: Logout erfolgreich, leite zur Anmeldeseite weiter');
+    } else {
+      console.warn('AUTH: Server-Logout war nicht erfolgreich, Status:', response.status);
+    }
+    
+    // In jedem Fall zur Login-Seite weiterleiten
+    redirectToLogin();
+  } catch (error) {
+    console.error('AUTH: Fehler beim Logout:', error);
+    // Bei Fehler trotzdem versuchen, zur Login-Seite zu navigieren
+    redirectToLogin();
   }
 }

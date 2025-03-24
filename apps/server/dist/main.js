@@ -51,6 +51,24 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, {
         logger: new WinstonLoggerWrapper(),
     });
+    app.use((req, res, next) => {
+        if (req.cookies)
+            return next();
+        const cookieHeader = req.headers.cookie;
+        req.cookies = {};
+        if (cookieHeader) {
+            cookieHeader.split(';').forEach(cookie => {
+                const parts = cookie.split('=');
+                const key = parts[0].trim();
+                if (key) {
+                    const value = parts.slice(1).join('=');
+                    req.cookies[key] = decodeURIComponent(value);
+                }
+            });
+        }
+        next();
+    });
+    console.log('Eigene Cookie-Parser-Middleware aktiviert');
     app.enableCors({
         origin: [
             'http://localhost:3000',

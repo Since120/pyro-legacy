@@ -35,6 +35,10 @@ __decorate([
     __metadata("design:type", Object)
 ], User.prototype, "avatar", void 0);
 __decorate([
+    (0, graphql_1.Field)(() => String, { nullable: true }),
+    __metadata("design:type", Object)
+], User.prototype, "email", void 0);
+__decorate([
     (0, graphql_1.Field)(() => [String], { defaultValue: [] }),
     __metadata("design:type", Array)
 ], User.prototype, "guilds", void 0);

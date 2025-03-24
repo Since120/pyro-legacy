@@ -14,17 +14,40 @@ const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const passport_jwt_1 = require("passport-jwt");
 const auth_service_1 = require("../auth.service");
+const cookieExtractor = (req) => {
+    if (req && req.headers && req.headers.cookie) {
+        const cookies = req.headers.cookie.split(';')
+            .map(c => c.trim())
+            .reduce((acc, curr) => {
+            const [key, value] = curr.split('=');
+            acc[key] = value;
+            return acc;
+        }, {});
+        return cookies['pyro_auth_token'] || null;
+    }
+    return null;
+};
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
     constructor(authService) {
         super({
-            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
+            jwtFromRequest: passport_jwt_1.ExtractJwt.fromExtractors([
+                cookieExtractor,
+                passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken()
+            ]),
             ignoreExpiration: false,
             secretOrKey: process.env.JWT_SECRET,
         });
         this.authService = authService;
     }
     async validate(payload) {
-        return this.authService.findUserById(payload.sub);
+        const user = await this.authService.findUserById(payload.sub);
+        if (user) {
+            console.log(`JWT Strategy: Benutzer ${user.username} authentifiziert`);
+        }
+        else {
+            console.log(`JWT Strategy: Ungültiger Benutzer in Token: ${payload.sub}`);
+        }
+        return user;
     }
 };
 exports.JwtStrategy = JwtStrategy;

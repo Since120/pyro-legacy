@@ -1,136 +1,120 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/context/auth-context';
-
-// Direktes Navigieren ohne router.push - wichtig für zuverlässigere Navigation
-function forceNavigate(url: string) {
-  console.log('DIREKTE NAVIGATION: Erzwinge Weiterleitung zu:', url);
-  window.location.href = url;
-}
+import { redirectToDashboard } from '@/lib/auth';
 
 export default function CallbackPage() {
-  const { login } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [loginAttempted, setLoginAttempted] = useState(false);
+  const [success, setSuccess] = useState(false);
   
   useEffect(() => {
-    // Lösche ALLE alten Flags, die eventuell Probleme verursachen
-    localStorage.removeItem('auth_callback_processed');
-    localStorage.removeItem('dashboard_auth_check');
-    localStorage.removeItem('auth_guard_check');
-    localStorage.removeItem('auth_login_in_progress');
-    
-    console.log('CALLBACK: Seite geladen, token wird extrahiert');
-    
-    // Login-Prozess und Weiterleitungslogik
-    const processLogin = async () => {
-      try {
-        // Token aus URL extrahieren
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-        
-        if (!token) {
-          throw new Error('Kein Token gefunden');
+    // Unnötige localStorage Einträge aufräumen
+    try {
+      for (const key of Object.keys(localStorage)) {
+        if (key.includes('auth_') || key.includes('dashboard_auth')) {
+          localStorage.removeItem(key);
         }
-        
-        console.log('CALLBACK: Token gefunden, starte Login-Prozess');
-        
-        // Führe Login durch
-        const result = await login(token);
-        setLoginAttempted(true);
-        
-        if (result.data?.me) {
-          console.log('CALLBACK: Login erfolgreich, bereite Weiterleitung vor');
-          
-          // Token im localStorage speichern als Fallback
-          localStorage.setItem('auth_token', token);
-          
-          // Erzwinge die Weiterleitung SOFORT zum Dashboard
-          console.log('CALLBACK: SOFORTIGE WEITERLEITUNG ZUM DASHBOARD');
-          forceNavigate('/dashboard');
-        } else {
-          throw new Error(result.error || 'Login fehlgeschlagen');
-        }
-      } catch (err) {
-        console.error('CALLBACK: Login-Fehler:', err);
-        setError(err instanceof Error ? err.message : 'Unbekannter Fehler');
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (e) {
+      console.error('Fehler beim Zurücksetzen des Speicherzustands:', e);
+    }
     
-    // Starte Login-Prozess
-    processLogin();
-  }, [login]);
+    console.log('AUTH CALLBACK: Seite geladen, Token bereits in HttpOnly Cookie gesetzt');
+    console.log('AUTH CALLBACK: Bestätige erfolgreiche Anmeldung');
+    
+    // Da der Server bereits das Cookie gesetzt hat, müssen wir hier nichts weiter tun
+    setSuccess(true);
+    setLoading(false);
+    
+    // Kurze Verzögerung vor der Weiterleitung
+    setTimeout(() => {
+      console.log('AUTH CALLBACK: Weiterleitung zum Dashboard');
+      redirectToDashboard();
+    }, 1500);
+  }, []);
   
-  // Manueller Weiterleitungsbutton
-  const handleManualRedirect = () => {
-    console.log('CALLBACK: Manuelle Weiterleitung ausgelöst');
-    forceNavigate('/dashboard');
+  // Manuelle Weiterleitung erlauben
+  const handleManualRedirect = (path: string) => {
+    console.log(`AUTH CALLBACK: Manuelle Weiterleitung zu ${path}`);
+    window.location.href = path;
   };
   
-  // Ladeanzeige
   if (loading) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
         <div className="mb-4 text-2xl font-semibold">Anmeldung wird verarbeitet...</div>
-        <div className="text-sm text-muted-foreground mb-4">
-          Einen Moment bitte, während wir die Anmeldung abschließen.
+        <div className="text-sm text-gray-500 mb-6">
+          Einen Moment bitte, die Authentifizierung wird abgeschlossen.
         </div>
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
+        <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
       </div>
     );
   }
   
-  // Fehleranzeige
   if (error) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
-        <div className="mb-4 text-2xl font-semibold text-red-500">Anmeldefehler</div>
-        <div className="mb-4 text-sm text-muted-foreground">{error}</div>
+        <div className="mb-4 text-2xl font-semibold text-red-600">Anmeldefehler</div>
+        <div className="mb-6 max-w-md text-center">
+          <p className="text-gray-700">{error}</p>
+        </div>
+        <div className="flex gap-4">
+          <button 
+            onClick={() => handleManualRedirect('/auth/login')}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          >
+            Erneut versuchen
+          </button>
+          <button 
+            onClick={() => handleManualRedirect('/dashboard')}
+            className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition"
+          >
+            Zum Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  if (success) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <div className="mb-4 text-2xl font-semibold text-green-600">Login erfolgreich!</div>
+        <div className="mb-6 text-gray-700">
+          Sie werden in wenigen Sekunden zum Dashboard weitergeleitet...
+        </div>
         <button 
-          onClick={() => forceNavigate('/auth/login')}
+          onClick={() => handleManualRedirect('/dashboard')}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
         >
-          Zurück zum Login
+          Direkt zum Dashboard
         </button>
       </div>
     );
   }
   
-  // Wenn Login versucht wurde aber kein Fehler auftrat und wir noch hier sind
-  if (loginAttempted) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
-        <div className="mb-4 text-2xl font-semibold text-green-500">Anmeldung erfolgreich!</div>
-        <div className="text-sm text-muted-foreground mb-4">
-          Die automatische Weiterleitung zum Dashboard funktioniert nicht.
-        </div>
+  // Sollte eigentlich nicht erreicht werden
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center">
+      <div className="mb-4 text-2xl font-semibold text-amber-600">Unerwarteter Status</div>
+      <div className="mb-6 text-gray-700">
+        Die Anwendung befindet sich in einem unerwarteten Zustand.
+      </div>
+      <div className="flex gap-4">
         <button 
-          onClick={handleManualRedirect}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition mb-4"
+          onClick={() => handleManualRedirect('/dashboard')}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
         >
           Zum Dashboard
         </button>
-        <div className="text-xs text-muted-foreground">
-          Technische Info: LoginAttempted=true, Error=null
-        </div>
+        <button 
+          onClick={() => handleManualRedirect('/auth/login')}
+          className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition"
+        >
+          Zum Login
+        </button>
       </div>
-    );
-  }
-  
-  // Fallback - sollte eigentlich nicht erreicht werden
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center">
-      <div className="mb-4 text-2xl font-semibold">Unerwarteter Status</div>
-      <button 
-        onClick={handleManualRedirect}
-        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-      >
-        Zum Dashboard
-      </button>
     </div>
   );
 }

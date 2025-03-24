@@ -6,4 +6,9 @@ export declare class AuthController {
     discordAuth(): Promise<void>;
     discordAuthCallback(req: any, res: Response): Promise<void>;
     getProfile(req: any): any;
+    logout(res: Response): void;
+    checkAuth(req: any): {
+        authenticated: boolean;
+        user: any;
+    };
 }

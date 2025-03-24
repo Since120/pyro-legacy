@@ -55,6 +55,31 @@ async function bootstrap(): Promise<void> {
     logger: new WinstonLoggerWrapper(),
   });
 
+  // Einfache Cookie-Parser Middleware implementieren
+  app.use((req, res, next) => {
+    // Wenn die Cookies bereits geparst wurden, nichts tun
+    if (req.cookies) return next();
+    
+    // Cookies manuell parsen
+    const cookieHeader = req.headers.cookie;
+    req.cookies = {};
+    
+    if (cookieHeader) {
+      cookieHeader.split(';').forEach(cookie => {
+        const parts = cookie.split('=');
+        const key = parts[0].trim();
+        if (key) {
+          const value = parts.slice(1).join('=');
+          req.cookies[key] = decodeURIComponent(value);
+        }
+      });
+    }
+    
+    next();
+  });
+  
+  console.log('Eigene Cookie-Parser-Middleware aktiviert');
+  
   // CORS-Konfiguration aktivieren
   app.enableCors({
     origin: [
