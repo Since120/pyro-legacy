@@ -55,6 +55,20 @@ async function bootstrap(): Promise<void> {
     logger: new WinstonLoggerWrapper(),
   });
 
+  // CORS-Konfiguration aktivieren
+  app.enableCors({
+    origin: [
+      'http://localhost:3000',  // Frontend-Entwicklungsserver
+      'http://localhost:3001',  // Alternative Frontend-Port
+      'http://192.168.1.227:3000', // Frontend-Netzwerkzugriff
+      'http://192.168.1.227:3001', // Alternative Frontend-Netzwerkzugriff
+      process.env.FRONTEND_URL, // Produktions-Frontend-URL (falls vorhanden)
+    ].filter(Boolean), // Entfernt undefined-Werte
+    credentials: true, // Wichtig für Cookies und Authentifizierung
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  });
+
   await app.listen(port);
   console.info(`API is running on port ${port}`);
 }

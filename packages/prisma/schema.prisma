@@ -10,19 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                  String    @id @default(cuid())
-  discordId           String    @unique
-  username            String
-  discriminator       String?
-  avatar              String?
-  guilds              String[]  @default([])
-  discordAccessToken  String?
-  discordRefreshToken String?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @default(now()) @updatedAt
-}
-
 model Category {
   id                    String   @id @default(cuid())
   guild_id      String   @default("default_guild")
@@ -39,4 +26,17 @@ model Category {
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime @default(now()) @updatedAt
+}
+
+model User {
+  id                  String    @id @default(cuid())
+  discordId           String    @unique
+  username            String
+  discriminator       String?
+  avatar              String?
+  guilds              String[]  @default([])
+  discordAccessToken  String?
+  discordRefreshToken String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @default(now()) @updatedAt
 }

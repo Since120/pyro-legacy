@@ -51,6 +51,18 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, {
         logger: new WinstonLoggerWrapper(),
     });
+    app.enableCors({
+        origin: [
+            'http://localhost:3000',
+            'http://localhost:3001',
+            'http://192.168.1.227:3000',
+            'http://192.168.1.227:3001',
+            process.env.FRONTEND_URL,
+        ].filter(Boolean),
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    });
     await app.listen(port);
     console.info(`API is running on port ${port}`);
 }

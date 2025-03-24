@@ -15,6 +15,7 @@
 		"test": "jest --watch"
 	},
 	"dependencies": {
+		"@apollo/client": "^3.13.5",
 		"@auth0/nextjs-auth0": "4.0.0-beta.14",
 		"@clerk/nextjs": "6.9.9",
 		"@dnd-kit/core": "6.3.1",
@@ -41,6 +42,7 @@
 		"@mui/utils": "6.3.1",
 		"@mui/x-date-pickers": "7.23.6",
 		"@phosphor-icons/react": "2.1.7",
+		"@pyro/types": "workspace:*",
 		"@react-pdf/renderer": "4.1.6",
 		"@supabase/ssr": "0.5.2",
 		"@supabase/supabase-js": "2.47.12",
@@ -52,6 +54,7 @@
 		"dayjs": "1.11.13",
 		"embla-carousel": "8.5.2",
 		"embla-carousel-react": "8.5.2",
+		"graphql": "^16.10.0",
 		"i18next": "24.2.1",
 		"mapbox-gl": "3.9.2",
 		"next": "15.1.4",

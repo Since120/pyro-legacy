@@ -34,6 +34,7 @@ import { DropdownTrigger } from '@/components/core/dropdown/dropdown-trigger';
 import { Logo } from '@/components/core/logo';
 import { SearchDialog } from '@/components/dashboard/layout/search-dialog';
 import type { ColorScheme } from '@/styles/theme/types';
+import { useAuth } from '@/context/auth-context';
 
 import { ContactsPopover } from '../contacts-popover';
 import { languageFlags, LanguagePopover } from '../language-popover';
@@ -44,6 +45,7 @@ import { NotificationsPopover } from '../notifications-popover';
 import { UserPopover } from '../user-popover';
 import { WorkspacesSwitch } from '../workspaces-switch';
 import { navColorStyles } from './styles';
+
 
 const logoColors = {
 	dark: { blend_in: 'light', discrete: 'light', evident: 'light' },
@@ -229,37 +231,43 @@ const user = {
 
 function UserButton(): React.JSX.Element {
 	const popover = usePopover<HTMLButtonElement>();
-
+	const { user } = useAuth();
+	
+	// Get Discord avatar URL or fallback to default
+	const avatarUrl = user?.avatar 
+	  ? `https://cdn.discordapp.com/avatars/${user.discordId}/${user.avatar}.png?size=128` 
+	  : '/assets/avatar.png';
+	
 	return (
-		<React.Fragment>
-			<Box
-				component="button"
-				onClick={popover.handleOpen}
-				ref={popover.anchorRef}
-				sx={{ border: 'none', background: 'transparent', cursor: 'pointer', p: 0 }}
-			>
-				<Badge
-					anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-					color="success"
-					sx={{
-						'& .MuiBadge-dot': {
-							border: '2px solid var(--MainNav-background)',
-							borderRadius: '50%',
-							bottom: '6px',
-							height: '12px',
-							right: '6px',
-							width: '12px',
-						},
-					}}
-					variant="dot"
-				>
-					<Avatar src={user.avatar} />
-				</Badge>
-			</Box>
-			<UserPopover anchorEl={popover.anchorRef.current} onClose={popover.handleClose} open={popover.open} />
-		</React.Fragment>
+	  <React.Fragment>
+		<Box
+		  component="button"
+		  onClick={popover.handleOpen}
+		  ref={popover.anchorRef}
+		  sx={{ border: 'none', background: 'transparent', cursor: 'pointer', p: 0 }}
+		>
+		  <Badge
+			anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+			color="success"
+			sx={{
+			  '& .MuiBadge-dot': {
+				border: '2px solid var(--MainNav-background)',
+				borderRadius: '50%',
+				bottom: '6px',
+				height: '12px',
+				right: '6px',
+				width: '12px',
+			  },
+			}}
+			variant="dot"
+		  >
+			<Avatar src={avatarUrl} />
+		  </Badge>
+		</Box>
+		<UserPopover anchorEl={popover.anchorRef.current} onClose={popover.handleClose} open={popover.open} />
+	  </React.Fragment>
 	);
-}
+  }
 
 function renderNavGroups({ items = [], pathname }: { items?: NavItemConfig[]; pathname: string }): React.JSX.Element {
 	const children = items.reduce((acc: React.ReactNode[], curr: NavItemConfig): React.ReactNode[] => {

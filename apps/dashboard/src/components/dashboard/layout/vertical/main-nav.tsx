@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import type { NavItemConfig } from '@/types/nav';
 import { useDialog } from '@/hooks/use-dialog';
 import { usePopover } from '@/hooks/use-popover';
+import { useAuth } from '@/context/auth-context';
 
 import { ContactsPopover } from '../contacts-popover';
 import { languageFlags, LanguagePopover } from '../language-popover';
@@ -182,34 +183,40 @@ const user = {
 
 function UserButton(): React.JSX.Element {
 	const popover = usePopover<HTMLButtonElement>();
-
+	const { user } = useAuth();
+	
+	// Get Discord avatar URL or fallback to default
+	const avatarUrl = user?.avatar 
+	  ? `https://cdn.discordapp.com/avatars/${user.discordId}/${user.avatar}.png?size=128` 
+	  : '/assets/avatar.png';
+	
 	return (
-		<React.Fragment>
-			<Box
-				component="button"
-				onClick={popover.handleOpen}
-				ref={popover.anchorRef}
-				sx={{ border: 'none', background: 'transparent', cursor: 'pointer', p: 0 }}
-			>
-				<Badge
-					anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-					color="success"
-					sx={{
-						'& .MuiBadge-dot': {
-							border: '2px solid var(--MainNav-background)',
-							borderRadius: '50%',
-							bottom: '6px',
-							height: '12px',
-							right: '6px',
-							width: '12px',
-						},
-					}}
-					variant="dot"
-				>
-					<Avatar src={user.avatar} />
-				</Badge>
-			</Box>
-			<UserPopover anchorEl={popover.anchorRef.current} onClose={popover.handleClose} open={popover.open} />
-		</React.Fragment>
+	  <React.Fragment>
+		<Box
+		  component="button"
+		  onClick={popover.handleOpen}
+		  ref={popover.anchorRef}
+		  sx={{ border: 'none', background: 'transparent', cursor: 'pointer', p: 0 }}
+		>
+		  <Badge
+			anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+			color="success"
+			sx={{
+			  '& .MuiBadge-dot': {
+				border: '2px solid var(--MainNav-background)',
+				borderRadius: '50%',
+				bottom: '6px',
+				height: '12px',
+				right: '6px',
+				width: '12px',
+			  },
+			}}
+			variant="dot"
+		  >
+			<Avatar src={avatarUrl} />
+		  </Badge>
+		</Box>
+		<UserPopover anchorEl={popover.anchorRef.current} onClose={popover.handleClose} open={popover.open} />
+	  </React.Fragment>
 	);
-}
+  }
