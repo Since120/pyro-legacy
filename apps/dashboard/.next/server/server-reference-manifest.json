@@ -1,5 +1,48 @@
 {
-  "node": {},
+  "node": {
+    "00db4a570b9aee88b3f13c0bdc3023543c606457a1": {
+      "workers": {
+        "app/_not-found/page": {
+          "moduleId": "(rsc)/../../node_modules/.pnpm/next@15.1.4_@babel+core@7.2_38c1f09463da4c7269ddedf295209e06/node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cinfo%5C%5CDesktop%5C%5Cbot%5C%5CPyro%5C%5Capps%5C%5Cdashboard%5C%5Csrc%5C%5Clib%5C%5Csettings.ts%22%2C%5B%5B%2200db4a570b9aee88b3f13c0bdc3023543c606457a1%22%2C%22getSettings%22%5D%2C%5B%2240a030a8d8678dca58d33d141858ef01f834991685%22%2C%22setSettings%22%5D%5D%5D%5D&__client_imported__=!",
+          "async": false
+        },
+        "app/dashboard/page": {
+          "moduleId": "(rsc)/../../node_modules/.pnpm/next@15.1.4_@babel+core@7.2_38c1f09463da4c7269ddedf295209e06/node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cinfo%5C%5CDesktop%5C%5Cbot%5C%5CPyro%5C%5Capps%5C%5Cdashboard%5C%5Csrc%5C%5Clib%5C%5Csettings.ts%22%2C%5B%5B%2200db4a570b9aee88b3f13c0bdc3023543c606457a1%22%2C%22getSettings%22%5D%2C%5B%2240a030a8d8678dca58d33d141858ef01f834991685%22%2C%22setSettings%22%5D%5D%5D%5D&__client_imported__=!",
+          "async": false
+        },
+        "app/auth/signin/page": {
+          "moduleId": "(rsc)/../../node_modules/.pnpm/next@15.1.4_@babel+core@7.2_38c1f09463da4c7269ddedf295209e06/node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cinfo%5C%5CDesktop%5C%5Cbot%5C%5CPyro%5C%5Capps%5C%5Cdashboard%5C%5Csrc%5C%5Clib%5C%5Csettings.ts%22%2C%5B%5B%2200db4a570b9aee88b3f13c0bdc3023543c606457a1%22%2C%22getSettings%22%5D%2C%5B%2240a030a8d8678dca58d33d141858ef01f834991685%22%2C%22setSettings%22%5D%5D%5D%5D&__client_imported__=!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/_not-found/page": "rsc",
+        "app/dashboard/page": "rsc",
+        "app/auth/signin/page": "rsc"
+      }
+    },
+    "40a030a8d8678dca58d33d141858ef01f834991685": {
+      "workers": {
+        "app/_not-found/page": {
+          "moduleId": "(rsc)/../../node_modules/.pnpm/next@15.1.4_@babel+core@7.2_38c1f09463da4c7269ddedf295209e06/node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cinfo%5C%5CDesktop%5C%5Cbot%5C%5CPyro%5C%5Capps%5C%5Cdashboard%5C%5Csrc%5C%5Clib%5C%5Csettings.ts%22%2C%5B%5B%2200db4a570b9aee88b3f13c0bdc3023543c606457a1%22%2C%22getSettings%22%5D%2C%5B%2240a030a8d8678dca58d33d141858ef01f834991685%22%2C%22setSettings%22%5D%5D%5D%5D&__client_imported__=!",
+          "async": false
+        },
+        "app/dashboard/page": {
+          "moduleId": "(rsc)/../../node_modules/.pnpm/next@15.1.4_@babel+core@7.2_38c1f09463da4c7269ddedf295209e06/node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cinfo%5C%5CDesktop%5C%5Cbot%5C%5CPyro%5C%5Capps%5C%5Cdashboard%5C%5Csrc%5C%5Clib%5C%5Csettings.ts%22%2C%5B%5B%2200db4a570b9aee88b3f13c0bdc3023543c606457a1%22%2C%22getSettings%22%5D%2C%5B%2240a030a8d8678dca58d33d141858ef01f834991685%22%2C%22setSettings%22%5D%5D%5D%5D&__client_imported__=!",
+          "async": false
+        },
+        "app/auth/signin/page": {
+          "moduleId": "(rsc)/../../node_modules/.pnpm/next@15.1.4_@babel+core@7.2_38c1f09463da4c7269ddedf295209e06/node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cinfo%5C%5CDesktop%5C%5Cbot%5C%5CPyro%5C%5Capps%5C%5Cdashboard%5C%5Csrc%5C%5Clib%5C%5Csettings.ts%22%2C%5B%5B%2200db4a570b9aee88b3f13c0bdc3023543c606457a1%22%2C%22getSettings%22%5D%2C%5B%2240a030a8d8678dca58d33d141858ef01f834991685%22%2C%22setSettings%22%5D%5D%5D%5D&__client_imported__=!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/_not-found/page": "rsc",
+        "app/dashboard/page": "rsc",
+        "app/auth/signin/page": "rsc"
+      }
+    }
+  },
   "edge": {},
   "encryptionKey": "X0eBXjfbxGXjGejwK9iolUoSIsaByVo5jWpw61HWwdk="
 }
