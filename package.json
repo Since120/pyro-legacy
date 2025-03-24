@@ -17,7 +17,9 @@
 		"studio": "pnpm --filter @pyro-prisma run prisma -- studio",
 		"db:generate": "pnpm --filter @pyro/prisma run db:generate",
 		"db:migrate": "pnpm --filter @pyro/prisma run db:migrate",
-		"db:studio": "pnpm --filter @pyro/prisma run db:studio"
+		"db:studio": "pnpm --filter @pyro/prisma run db:studio",
+		"generate-types": "graphql-codegen --config codegen.yml",
+		"types": "pnpm generate-types"
 	},
 	"dependencies": {
 		"@prisma/client": "^6.3.1",
@@ -28,10 +30,14 @@
 	"devDependencies": {
 		"@eslint/eslintrc": "3.2.0",
 		"@eslint/js": "9.20.0",
+		"@graphql-codegen/add": "^5.0.3",
+		"@graphql-codegen/cli": "^5.0.5",
+		"@graphql-codegen/typescript": "^4.1.5",
 		"@ianvs/prettier-plugin-sort-imports": "4.4.0",
 		"@next/eslint-plugin-next": "15.1.4",
 		"@typescript-eslint/eslint-plugin": "^8.24.0",
 		"@typescript-eslint/parser": "8.19.1",
+		"change-case-all": "^2.1.0",
 		"cross-env": "^7.0.3",
 		"eslint": "9.20.1",
 		"eslint-config-prettier": "10.0.1",
@@ -40,6 +46,7 @@
 		"eslint-plugin-react": "7.37.4",
 		"eslint-plugin-unicorn": "56.0.1",
 		"globals": "15.14.0",
+		"pascal-case": "^3.1.2",
 		"prettier": "3.5.1",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.7.3",

@@ -1,0 +1,21 @@
+schema: apps/server/src/schema.gql
+generates:
+  packages/types/src/graphql-types.ts:
+    plugins:
+      - typescript
+    config:
+      skipTypename: true
+      scalars:
+        DateTime: Date
+      enumsAsTypes: true
+      
+  # Index-Datei mit direktem Export
+  packages/types/src/index.ts:
+    plugins:
+      - add:
+          content: |
+            // Export aller Typen aus der generierten Datei
+            export * from './graphql-types';
+            
+            // Sicherstellen, dass DateTime korrekt behandelt wird
+            export type DateTime = Date;

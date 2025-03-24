@@ -1,10 +1,5 @@
-// Type definitions for Pyro
+// Export aller Typen aus der generierten Datei
+export * from './graphql-types';
 
-// Example of a user type
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
-// Add more types as needed
+// Sicherstellen, dass DateTime korrekt behandelt wird
+export type DateTime = Date;
