@@ -18,6 +18,7 @@ const categories_module_1 = require("./categories/categories.module");
 const roles_module_1 = require("./roles/roles.module");
 const pubsub_module_1 = require("./pubsub/pubsub.module");
 const auth_module_1 = require("./auth/auth.module");
+const zones_module_1 = require("./zones/zones.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -38,6 +39,7 @@ exports.AppModule = AppModule = __decorate([
             prisma_module_1.PrismaModule,
             pubsub_module_1.PubSubModule,
             categories_module_1.CategoriesModule,
+            zones_module_1.ZonesModule,
             roles_module_1.RolesModule,
             auth_module_1.AuthModule,
         ],

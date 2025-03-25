@@ -39,6 +39,12 @@ let CategoriesService = class CategoriesService {
         });
     }
     async remove(id) {
+        const zoneCount = await this.prisma.zone.count({
+            where: { categoryId: id },
+        });
+        if (zoneCount > 0) {
+            throw new common_1.BadRequestException(`Die Kategorie kann nicht gelöscht werden, da noch ${zoneCount} Zone(n) damit verknüpft sind.`);
+        }
         return this.prisma.category.delete({
             where: { id },
         });

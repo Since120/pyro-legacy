@@ -8,13 +8,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var RedisPubSubService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RedisPubSubService = void 0;
 const common_1 = require("@nestjs/common");
 const graphql_redis_subscriptions_1 = require("graphql-redis-subscriptions");
 const ioredis_1 = require("ioredis");
-let RedisPubSubService = class RedisPubSubService {
+let RedisPubSubService = RedisPubSubService_1 = class RedisPubSubService {
     constructor() {
+        this.logger = new common_1.Logger(RedisPubSubService_1.name);
         const options = {
             host: process.env.REDIS_HOST || 'localhost',
             port: parseInt(process.env.REDIS_PORT || '6379'),
@@ -35,11 +37,11 @@ let RedisPubSubService = class RedisPubSubService {
         });
     }
     async onModuleInit() {
-        console.log('Redis PubSub Service initialized');
+        this.logger.log('Redis PubSub Service initialized');
     }
     async onModuleDestroy() {
         await this.pubSub.close();
-        console.log('Redis PubSub Service closed');
+        this.logger.log('Redis PubSub Service closed');
     }
     getPubSub() {
         return this.pubSub;
@@ -52,7 +54,7 @@ let RedisPubSubService = class RedisPubSubService {
     }
 };
 exports.RedisPubSubService = RedisPubSubService;
-exports.RedisPubSubService = RedisPubSubService = __decorate([
+exports.RedisPubSubService = RedisPubSubService = RedisPubSubService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [])
 ], RedisPubSubService);

@@ -35,6 +35,16 @@ input CreateCategoryInput {
   trackingActive: Boolean! = false
 }
 
+input CreateZoneInput {
+  categoryId: String
+  deletedInDiscord: Boolean! = false
+  guild_id: String! = "default_guild"
+  minutesRequired: Int! = 60
+  pointsGranted: Int! = 1
+  zoneKey: String!
+  zoneName: String!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -57,8 +67,11 @@ type DiscordRole {
 
 type Mutation {
   createCategory(createCategoryInput: CreateCategoryInput!): Category!
+  createZone(createZoneInput: CreateZoneInput!): Zone!
   removeCategory(id: ID!): Category!
+  removeZone(id: ID!): Zone!
   updateCategory(updateCategoryInput: UpdateCategoryInput!): Category!
+  updateZone(updateZoneInput: UpdateZoneInput!): Zone!
 
   """Validiert einen JWT Token"""
   validateToken(token: String!): AuthResponse
@@ -73,6 +86,9 @@ type Query {
   me: User
   role(guild_id: String!, id: ID!): DiscordRole
   roles(guild_id: String!): [DiscordRole!]!
+  zone(id: ID!): Zone
+  zones(guild_id: String! = "default_guild"): [Zone!]!
+  zonesByCategory(categoryId: String!): [Zone!]!
 }
 
 type Subscription {
@@ -82,6 +98,9 @@ type Subscription {
   roleCreated: DiscordRole
   roleDeleted: DiscordRole
   roleUpdated: DiscordRole
+  zoneCreated: Zone!
+  zoneRemoved: Zone!
+  zoneUpdated: Zone!
 }
 
 input UpdateCategoryInput {
@@ -96,6 +115,17 @@ input UpdateCategoryInput {
   trackingActive: Boolean = false
 }
 
+input UpdateZoneInput {
+  categoryId: String
+  deletedInDiscord: Boolean = false
+  guild_id: String = "default_guild"
+  id: ID!
+  minutesRequired: Int = 60
+  pointsGranted: Int = 1
+  zoneKey: String
+  zoneName: String
+}
+
 type User {
   avatar: String
   createdAt: DateTime!
@@ -106,4 +136,20 @@ type User {
   id: ID!
   updatedAt: DateTime!
   username: String!
+}
+
+type Zone {
+  category: Category
+  categoryId: String
+  createdAt: DateTime!
+  deletedInDiscord: Boolean!
+  guild_id: String!
+  id: ID!
+  lastUsage: DateTime
+  minutesRequired: Int!
+  pointsGranted: Int!
+  totalSecondsInZone: Int!
+  updatedAt: DateTime!
+  zoneKey: String!
+  zoneName: String!
 }

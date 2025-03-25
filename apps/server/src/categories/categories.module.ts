@@ -1,4 +1,3 @@
-// apps/server/src/categories/categories.module.ts
 import { Module } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CategoriesResolver } from './categories.resolver';

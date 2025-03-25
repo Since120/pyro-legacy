@@ -49,6 +49,16 @@ export type CreateCategoryInput = {
   trackingActive?: Scalars['Boolean']['input'];
 };
 
+export type CreateZoneInput = {
+  categoryId?: InputMaybe<Scalars['String']['input']>;
+  deletedInDiscord?: Scalars['Boolean']['input'];
+  guild_id?: Scalars['String']['input'];
+  minutesRequired?: Scalars['Int']['input'];
+  pointsGranted?: Scalars['Int']['input'];
+  zoneKey: Scalars['String']['input'];
+  zoneName: Scalars['String']['input'];
+};
+
 export type DiscordRole = {
   color: Scalars['Int']['output'];
   guild_id: Scalars['String']['output'];
@@ -66,8 +76,11 @@ export type DiscordRole = {
 
 export type Mutation = {
   createCategory: Category;
+  createZone: Zone;
   removeCategory: Category;
+  removeZone: Zone;
   updateCategory: Category;
+  updateZone: Zone;
   /** Validiert einen JWT Token */
   validateToken?: Maybe<AuthResponse>;
 };
@@ -78,13 +91,28 @@ export type MutationCreateCategoryArgs = {
 };
 
 
+export type MutationCreateZoneArgs = {
+  createZoneInput: CreateZoneInput;
+};
+
+
 export type MutationRemoveCategoryArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveZoneArgs = {
   id: Scalars['ID']['input'];
 };
 
 
 export type MutationUpdateCategoryArgs = {
   updateCategoryInput: UpdateCategoryInput;
+};
+
+
+export type MutationUpdateZoneArgs = {
+  updateZoneInput: UpdateZoneInput;
 };
 
 
@@ -100,6 +128,9 @@ export type Query = {
   me?: Maybe<User>;
   role?: Maybe<DiscordRole>;
   roles: Array<DiscordRole>;
+  zone?: Maybe<Zone>;
+  zones: Array<Zone>;
+  zonesByCategory: Array<Zone>;
 };
 
 
@@ -123,6 +154,21 @@ export type QueryRolesArgs = {
   guild_id: Scalars['String']['input'];
 };
 
+
+export type QueryZoneArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryZonesArgs = {
+  guild_id?: Scalars['String']['input'];
+};
+
+
+export type QueryZonesByCategoryArgs = {
+  categoryId: Scalars['String']['input'];
+};
+
 export type Subscription = {
   categoryCreated: Category;
   categoryRemoved: Category;
@@ -130,6 +176,9 @@ export type Subscription = {
   roleCreated?: Maybe<DiscordRole>;
   roleDeleted?: Maybe<DiscordRole>;
   roleUpdated?: Maybe<DiscordRole>;
+  zoneCreated: Zone;
+  zoneRemoved: Zone;
+  zoneUpdated: Zone;
 };
 
 export type UpdateCategoryInput = {
@@ -144,13 +193,41 @@ export type UpdateCategoryInput = {
   trackingActive?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type UpdateZoneInput = {
+  categoryId?: InputMaybe<Scalars['String']['input']>;
+  deletedInDiscord?: InputMaybe<Scalars['Boolean']['input']>;
+  guild_id?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  minutesRequired?: InputMaybe<Scalars['Int']['input']>;
+  pointsGranted?: InputMaybe<Scalars['Int']['input']>;
+  zoneKey?: InputMaybe<Scalars['String']['input']>;
+  zoneName?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type User = {
   avatar?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   discordId: Scalars['String']['output'];
   discriminator?: Maybe<Scalars['String']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
   guilds: Array<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   updatedAt: Scalars['DateTime']['output'];
   username: Scalars['String']['output'];
+};
+
+export type Zone = {
+  category?: Maybe<Category>;
+  categoryId?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  deletedInDiscord: Scalars['Boolean']['output'];
+  guild_id: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  lastUsage?: Maybe<Scalars['DateTime']['output']>;
+  minutesRequired: Scalars['Int']['output'];
+  pointsGranted: Scalars['Int']['output'];
+  totalSecondsInZone: Scalars['Int']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  zoneKey: Scalars['String']['output'];
+  zoneName: Scalars['String']['output'];
 };

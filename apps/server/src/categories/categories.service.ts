@@ -1,5 +1,4 @@
-// apps/server/src/categories/categories.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Category } from './entities/category.entity';
 import { CreateCategoryInput } from './dto/create-category.input';
@@ -36,6 +35,17 @@ export class CategoriesService {
   }
 
   async remove(id: string): Promise<Category> {
+    // Prüfe zuerst, ob noch Zonen mit dieser Kategorie verknüpft sind
+    const zoneCount = await this.prisma.zone.count({
+      where: { categoryId: id },
+    });
+
+    if (zoneCount > 0) {
+      throw new BadRequestException(
+        `Die Kategorie kann nicht gelöscht werden, da noch ${zoneCount} Zone(n) damit verknüpft sind.`
+      );
+    }
+
     return this.prisma.category.delete({
       where: { id },
     });

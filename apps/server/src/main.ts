@@ -1,36 +1,12 @@
 import './config'; // Lädt die Umgebungsvariablen (z.B. API_URL)
 import { NestFactory } from '@nestjs/core';
-import { LoggerService } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { URL } from 'url';
 
-// Erstelle einen Wrapper, der das NestJS LoggerService-Interface erfüllt:
-class WinstonLoggerWrapper implements LoggerService {
-  log(message: any, context?: string): void {
-    const msg = context ? `[${context}] ${String(message)}` : String(message);
-    console.info(msg);
-  }
-  error(message: any, trace?: string, context?: string): void {
-    const msg = context ? `[${context}] ${String(message)}` : String(message);
-    console.error(msg, trace ? String(trace) : undefined);
-  }
-  warn(message: any, context?: string): void {
-    const msg = context ? `[${context}] ${String(message)}` : String(message);
-    console.warn(msg);
-  }
-  debug(message: any, context?: string): void {
-    if (console.debug) {
-      const msg = context ? `[${context}] ${String(message)}` : String(message);
-      console.debug(msg);
-    }
-  }
-  verbose(message: any, context?: string): void {
-    const msg = context ? `[${context}] ${String(message)}` : String(message);
-    console.log(`[verbose] ${msg}`);
-  }
-}
-
 async function bootstrap(): Promise<void> {
+  const logger = new Logger('Bootstrap');
+  
   const apiUrl = process.env.API_URL;
   if (!apiUrl) {
     throw new Error('API_URL is not defined in the environment variables.');
@@ -47,13 +23,11 @@ async function bootstrap(): Promise<void> {
       throw new Error(`Invalid port in API_URL: ${apiUrl}`);
     }
   } catch (error) {
-    console.error('Error parsing API_URL:', error);
+    logger.error(`Error parsing API_URL: ${error.message}`, error.stack);
     process.exit(1);
   }
 
-  const app = await NestFactory.create(AppModule, {
-    logger: new WinstonLoggerWrapper(),
-  });
+  const app = await NestFactory.create(AppModule);
 
   // Einfache Cookie-Parser Middleware implementieren
   app.use((req, res, next) => {
@@ -78,7 +52,7 @@ async function bootstrap(): Promise<void> {
     next();
   });
   
-  console.log('Eigene Cookie-Parser-Middleware aktiviert');
+  logger.log('Eigene Cookie-Parser-Middleware aktiviert');
   
   // CORS-Konfiguration aktivieren
   app.enableCors({
@@ -95,10 +69,11 @@ async function bootstrap(): Promise<void> {
   });
 
   await app.listen(port);
-  console.info(`API is running on port ${port}`);
+  logger.log(`API is running on port ${port}`);
 }
 
 bootstrap().catch((err) => {
-  console.error('Bootstrap failed:', err);
+  const logger = new Logger('Bootstrap');
+  logger.error('Bootstrap failed:', err.stack);
   process.exit(1);
 });

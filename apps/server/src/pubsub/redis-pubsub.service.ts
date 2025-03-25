@@ -1,10 +1,11 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit, Logger } from '@nestjs/common';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import Redis from 'ioredis';
 
 @Injectable()
 export class RedisPubSubService implements OnModuleInit, OnModuleDestroy {
   private pubSub: RedisPubSub;
+  private readonly logger = new Logger(RedisPubSubService.name);
 
   constructor() {
     // Redis-Verbindungsoptionen
@@ -37,13 +38,13 @@ export class RedisPubSubService implements OnModuleInit, OnModuleDestroy {
 
   // Service-Initialisierung
   async onModuleInit() {
-    console.log('Redis PubSub Service initialized');
+    this.logger.log('Redis PubSub Service initialized');
   }
 
   // Cleanup beim Herunterfahren
   async onModuleDestroy() {
     await this.pubSub.close();
-    console.log('Redis PubSub Service closed');
+    this.logger.log('Redis PubSub Service closed');
   }
 
   // Getter für den PubSub-Instanz

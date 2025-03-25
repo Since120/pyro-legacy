@@ -7,24 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Category {
-  id                    String   @id @default(cuid())
-  guild_id      String   @default("default_guild")
-  name                  String
-  categoryType          String
-  isVisible             Boolean  @default(true)
-  trackingActive        Boolean  @default(false)   
-  sendSetup             Boolean  @default(false)
-  allowedRoles          String[] @default([])
-  lastUsage             DateTime?
-  totalSecondsInCateg   Int      @default(0)
-  discordCategoryId     String?
-  deletedInDiscord      Boolean  @default(false)
-
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @default(now()) @updatedAt
-}
-
 model User {
   id                  String    @id @default(cuid())
   discordId           String    @unique
@@ -35,6 +17,43 @@ model User {
   guilds              String[]  @default([])
   discordAccessToken  String?
   discordRefreshToken String?
+  
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @default(now()) @updatedAt
+}
+
+model Category {
+  id                    String   @id @default(cuid())
+  guild_id              String   @default("default_guild")
+  name                  String
+  categoryType          String
+  isVisible             Boolean  @default(true)
+  trackingActive        Boolean  @default(false)   
+  sendSetup             Boolean  @default(false)
+  allowedRoles          String[] @default([])
+  lastUsage             DateTime?
+  totalSecondsInCateg   Int      @default(0)
+  discordCategoryId     String?
+  deletedInDiscord      Boolean  @default(false)
+  zones                 Zone[]   // Neue Relation zu Zonen hinzufügen
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @default(now()) @updatedAt
+}
+
+model Zone {
+  id                 String     @id @default(cuid())
+  guild_id           String     @default("default_guild")
+  zoneKey            String     @unique        
+  zoneName           String
+  minutesRequired    Int        @default(60)
+  pointsGranted      Int        @default(1)
+  lastUsage          DateTime?
+  totalSecondsInZone Int        @default(0)
+  categoryId         String?
+  category           Category?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  deletedInDiscord   Boolean    @default(false)
+
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @default(now()) @updatedAt
 }
