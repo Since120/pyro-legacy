@@ -30,9 +30,11 @@ export function SettingsButton(): React.JSX.Element {
 			setMode(theme);
 		}
 
-		const updatedSettings = { ...settings, ...other } satisfies Settings;
+		// Nur die geänderten Werte speichern, nicht den gesamten settings-Zustand
+		// Debug-Log für die Nav-Color-Einstellung
+		console.log("Updating settings:", values);
 
-		await setPersistedSettings(updatedSettings);
+		await setPersistedSettings(other);
 
 		// Refresh the router to apply the new settings.
 		router.refresh();

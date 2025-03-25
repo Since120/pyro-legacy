@@ -2,24 +2,24 @@
   "node": {
     "00330376602ce93140effeafa08cce8adfa4225e92": {
       "workers": {
-        "app/auth/login/page": {
+        "app/dashboard/page": {
           "moduleId": "(rsc)/../../node_modules/.pnpm/next@15.1.4_@babel+core@7.2_38c1f09463da4c7269ddedf295209e06/node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cinfo%5C%5CDesktop%5C%5Cbot%5C%5CPyro%5C%5Capps%5C%5Cdashboard%5C%5Csrc%5C%5Clib%5C%5Csettings.ts%22%2C%5B%5B%2200330376602ce93140effeafa08cce8adfa4225e92%22%2C%22getSettings%22%5D%2C%5B%2240d5b3581fa8addc02f208b0f32518a9cf5504f7de%22%2C%22setSettings%22%5D%5D%5D%5D&__client_imported__=!",
           "async": false
         }
       },
       "layer": {
-        "app/auth/login/page": "rsc"
+        "app/dashboard/page": "rsc"
       }
     },
     "40d5b3581fa8addc02f208b0f32518a9cf5504f7de": {
       "workers": {
-        "app/auth/login/page": {
+        "app/dashboard/page": {
           "moduleId": "(rsc)/../../node_modules/.pnpm/next@15.1.4_@babel+core@7.2_38c1f09463da4c7269ddedf295209e06/node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cinfo%5C%5CDesktop%5C%5Cbot%5C%5CPyro%5C%5Capps%5C%5Cdashboard%5C%5Csrc%5C%5Clib%5C%5Csettings.ts%22%2C%5B%5B%2200330376602ce93140effeafa08cce8adfa4225e92%22%2C%22getSettings%22%5D%2C%5B%2240d5b3581fa8addc02f208b0f32518a9cf5504f7de%22%2C%22setSettings%22%5D%5D%5D%5D&__client_imported__=!",
           "async": false
         }
       },
       "layer": {
-        "app/auth/login/page": "rsc"
+        "app/dashboard/page": "rsc"
       }
     }
   },

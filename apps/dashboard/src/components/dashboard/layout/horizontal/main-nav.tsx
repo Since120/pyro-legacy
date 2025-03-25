@@ -66,6 +66,9 @@ export function MainNav({ color = 'evident', items = [] }: MainNavProps): React.
 
 	const styles = navColorStyles[colorScheme][color];
 	const logoColor = logoColors[colorScheme][color];
+	
+	// Debug-Log für die Nav-Color
+	console.log('NavColor in horizontal layout:', color, styles);
 
 	return (
 		<React.Fragment>
@@ -80,6 +83,10 @@ export function MainNav({ color = 'evident', items = [] }: MainNavProps): React.
 					position: 'sticky',
 					top: 0,
 					zIndex: 'var(--MainNav-zIndex)',
+					backdropFilter: 'blur(10px)',
+					boxShadow: `0 0 20px rgba(var(--mui-palette-primary-mainChannel), 0.3)`,
+					fontFamily: 'monospace',
+					letterSpacing: '0.03em',
 				}}
 			>
 				<Box
@@ -348,15 +355,41 @@ function NavItem({
 					p: '6px 16px',
 					textDecoration: 'none',
 					whiteSpace: 'nowrap',
+					position: 'relative',
+					fontFamily: 'monospace',
+					letterSpacing: '0.05em',
+					transition: 'all 0.2s',
+					'&::before': {
+						content: '""',
+						position: 'absolute',
+						left: 0,
+						right: 0,
+						height: '100%',
+						opacity: 0,
+						background: 'linear-gradient(to right, rgba(var(--mui-palette-primary-mainChannel), 0.1), transparent)',
+						transition: 'opacity 0.2s',
+					},
 					...(disabled && {
 						bgcolor: 'var(--NavItem-disabled-background)',
 						color: 'var(--NavItem-disabled-color)',
 						cursor: 'not-allowed',
 					}),
-					...(active && { bgcolor: 'var(--NavItem-active-background)', color: 'var(--NavItem-active-color)' }),
+					...(active && { 
+						bgcolor: 'var(--NavItem-active-background)', 
+						color: 'var(--NavItem-active-color)',
+						'&::before': {
+							opacity: 1,
+						},
+					}),
 					'&:hover': {
 						...(!disabled &&
-							!active && { bgcolor: 'var(--NavItem-hover-background)', color: 'var(--NavItem-hover-color)' }),
+							!active && { 
+								bgcolor: 'var(--NavItem-hover-background)',
+								color: 'var(--NavItem-hover-color)',
+								'&::before': {
+									opacity: 0.7,
+								},
+							}),
 					},
 				}}
 				tabIndex={0}
@@ -386,7 +419,7 @@ function NavItem({
 				) : null}
 				{isBranch ? (
 					<Box sx={{ alignItems: 'center', display: 'flex', flex: '0 0 auto' }}>
-						<CaretDownIcon fontSize="var(--icon-fontSize-sm)" />
+						<CaretDownIcon color="var(--NavItem-expand-color)" fontSize="var(--icon-fontSize-sm)" />
 					</Box>
 				) : null}
 			</Box>
@@ -398,7 +431,16 @@ function NavItem({
 			<Dropdown>
 				<DropdownTrigger>{element}</DropdownTrigger>
 				<DropdownPopover
-					PaperProps={{ sx: { minWidth: '200px', p: 1 } }}
+					PaperProps={{ 
+						sx: { 
+							minWidth: '200px', 
+							p: 1, 
+							bgcolor: 'rgba(10, 20, 30, 0.85)',
+							backdropFilter: 'blur(10px)',
+							border: '1px solid rgba(90, 220, 220, 0.2)',
+							boxShadow: '0 0 20px rgba(var(--mui-palette-primary-mainChannel), 0.3)'
+						} 
+					}}
 					anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
 				>
 					{renderDropdownItems({ pathname, items })}
@@ -473,15 +515,41 @@ function DropdownItem({
 					p: '6px 16px',
 					textDecoration: 'none',
 					whiteSpace: 'nowrap',
+					fontFamily: 'monospace',
+					letterSpacing: '0.05em',
+					position: 'relative',
+					transition: 'all 0.2s',
+					'&::before': {
+						content: '""',
+						position: 'absolute',
+						left: 0,
+						right: 0,
+						height: '100%',
+						opacity: 0,
+						background: 'linear-gradient(to right, rgba(var(--mui-palette-primary-mainChannel), 0.1), transparent)',
+						transition: 'opacity 0.2s',
+					},
 					...(disabled && {
-						bgcolor: 'var(--mui-palette-action-disabledBackground)',
-						color: 'var(--mui-action-disabled)',
+						bgcolor: 'var(--NavItem-disabled-background)',
+						color: 'var(--NavItem-disabled-color)',
 						cursor: 'not-allowed',
 					}),
-					...(active && { bgcolor: 'var(--mui-palette-action-selected)', color: 'var(--mui-palette-action-active)' }),
+					...(active && { 
+						bgcolor: 'var(--NavItem-active-background)',
+						color: 'var(--NavItem-active-color)',
+						'&::before': {
+							opacity: 1,
+						},
+					}),
 					'&:hover': {
 						...(!disabled &&
-							!active && { bgcolor: 'var(--mui-palette-action-hover)', color: 'var(--mui-palette-action-color)' }),
+							!active && { 
+								bgcolor: 'var(--NavItem-hover-background)', 
+								color: 'var(--NavItem-hover-color)',
+								'&::before': {
+									opacity: 0.7,
+								},
+							}),
 					},
 				}}
 				tabIndex={0}
@@ -496,7 +564,7 @@ function DropdownItem({
 				</Box>
 				{isBranch ? (
 					<Box sx={{ flex: '0 0 auto' }}>
-						<CaretRightIcon fontSize="var(--icon-fontSize-sm)" />
+						<CaretRightIcon color="var(--NavItem-expand-color)" fontSize="var(--icon-fontSize-sm)" />
 					</Box>
 				) : null}
 			</Box>
@@ -508,7 +576,16 @@ function DropdownItem({
 			<Dropdown>
 				<DropdownTrigger>{element}</DropdownTrigger>
 				<DropdownPopover
-					PaperProps={{ sx: { minWidth: '200px', p: 1 } }}
+					PaperProps={{ 
+						sx: { 
+							minWidth: '200px', 
+							p: 1,
+							bgcolor: 'rgba(10, 20, 30, 0.85)',
+							backdropFilter: 'blur(10px)',
+							border: '1px solid rgba(90, 220, 220, 0.2)',
+							boxShadow: '0 0 20px rgba(var(--mui-palette-primary-mainChannel), 0.3)'
+						} 
+					}}
 					anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
 				>
 					{renderDropdownItems({ pathname, items })}

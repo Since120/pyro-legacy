@@ -38,6 +38,9 @@ export function SideNav({ color = 'evident', items = [] }: SideNavProps): React.
 
 	const styles = navColorStyles[colorScheme][color];
 	const logoColor = logoColors[colorScheme][color];
+	
+	// Debug-Log für die Nav-Color
+	console.log('NavColor in vertical layout:', color, styles);
 
 	return (
 		<Box
@@ -54,6 +57,10 @@ export function SideNav({ color = 'evident', items = [] }: SideNavProps): React.
 				top: 0,
 				width: 'var(--SideNav-width)',
 				zIndex: 'var(--SideNav-zIndex)',
+				backdropFilter: 'blur(10px)',
+				boxShadow: `0 0 20px rgba(var(--mui-palette-primary-mainChannel), 0.3)`,
+				fontFamily: 'monospace',
+				letterSpacing: '0.03em',
 			}}
 		>
 			<Stack spacing={2} sx={{ p: 2 }}>
@@ -86,7 +93,16 @@ function renderNavGroups({ items, pathname }: { items: NavItemConfig[]; pathname
 			<Stack component="li" key={curr.key} spacing={1.5}>
 				{curr.title ? (
 					<div>
-						<Typography sx={{ color: 'var(--NavGroup-title-color)', fontSize: '0.875rem', fontWeight: 500 }}>
+						<Typography 
+							sx={{ 
+								color: 'var(--NavGroup-title-color)', 
+								fontSize: '0.875rem', 
+								fontWeight: 500,
+								fontFamily: 'monospace',
+								letterSpacing: '0.08em',
+								textTransform: 'uppercase'
+							}}
+						>
 							{curr.title}
 						</Typography>
 					</div>
@@ -201,6 +217,19 @@ function NavItem({
 					position: 'relative',
 					textDecoration: 'none',
 					whiteSpace: 'nowrap',
+					fontFamily: 'monospace',
+					letterSpacing: '0.05em',
+					transition: 'all 0.2s',
+					'&::before': {
+						content: '""',
+						position: 'absolute',
+						left: 0,
+						right: 0,
+						height: '100%',
+						opacity: 0,
+						background: 'linear-gradient(to right, rgba(var(--mui-palette-primary-mainChannel), 0.1), transparent)',
+						transition: 'opacity 0.2s',
+					},
 					...(disabled && {
 						bgcolor: 'var(--NavItem-disabled-background)',
 						color: 'var(--NavItem-disabled-color)',
@@ -209,8 +238,11 @@ function NavItem({
 					...(active && {
 						bgcolor: 'var(--NavItem-active-background)',
 						color: 'var(--NavItem-active-color)',
+						'&::before': {
+							opacity: 1,
+						},
 						...(depth > 0 && {
-							'&::before': {
+							'&::after': {
 								bgcolor: 'var(--NavItem-children-indicator)',
 								borderRadius: '2px',
 								content: '" "',
@@ -218,13 +250,20 @@ function NavItem({
 								left: '-14px',
 								position: 'absolute',
 								width: '3px',
+								boxShadow: '0 0 8px var(--NavItem-children-indicator)',
 							},
 						}),
 					}),
 					...(open && { color: 'var(--NavItem-open-color)' }),
 					'&:hover': {
 						...(!disabled &&
-							!active && { bgcolor: 'var(--NavItem-hover-background)', color: 'var(--NavItem-hover-color)' }),
+							!active && { 
+								bgcolor: 'var(--NavItem-hover-background)', 
+								color: 'var(--NavItem-hover-color)',
+								'&::before': {
+									opacity: 0.7,
+								},
+							}),
 					},
 				}}
 				tabIndex={0}

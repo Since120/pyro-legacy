@@ -133,4 +133,37 @@ html {
 
 body {
 	height: 100%;
+	position: relative;
+}
+
+/* Entferne das Grid aus dem Body, da es nun im Dashboard selbst ist */
+
+/* Typografie für futuristisches Feeling */
+.futuristic-text {
+	font-family: monospace;
+	letter-spacing: 0.08em;
+}
+
+/* Animation für Scanner-Effekt */
+@keyframes scanAnimation {
+	0% { top: -10%; }
+	100% { top: 100%; }
+}
+
+/* Animation für Grenzlinien */
+@keyframes borderAnimation {
+	0% { background-position: 0% 0%; }
+	100% { background-position: 200% 0%; }
+}
+
+/* Animation für Pulsieren */
+@keyframes pulse {
+	0% { opacity: 0.4; filter: blur(8px); }
+	100% { opacity: 0.8; filter: blur(12px); }
+}
+
+/* Animation für den Scan-Button-Effekt */
+@keyframes scan-button {
+	0% { left: -100%; }
+	100% { left: 200%; }
 }

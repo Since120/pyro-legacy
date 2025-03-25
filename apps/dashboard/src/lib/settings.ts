@@ -13,7 +13,20 @@ import { logger } from '@/lib/default-logger';
  */
 export async function setSettings(settings: Partial<Settings>): Promise<void> {
 	const cookieStore = await cookies();
-	cookieStore.set('settings', JSON.stringify(settings));
+	
+	// Aktuelle Einstellungen holen und mit neuen zusammenführen
+	const currentSettings = await getSettings();
+	const mergedSettings = { ...currentSettings, ...settings };
+	
+	// Alle null-Werte entfernen (um Keys zu löschen)
+	Object.keys(mergedSettings).forEach(key => {
+		if (mergedSettings[key] === null) {
+			delete mergedSettings[key];
+		}
+	});
+	
+	// Neue Einstellungen speichern
+	cookieStore.set('settings', JSON.stringify(mergedSettings));
 }
 
 /**

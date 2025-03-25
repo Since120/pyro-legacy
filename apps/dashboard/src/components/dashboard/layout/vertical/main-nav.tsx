@@ -13,6 +13,7 @@ import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
 import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '@mui/material/styles';
 
 import type { NavItemConfig } from '@/types/nav';
 import { useDialog } from '@/hooks/use-dialog';
@@ -33,14 +34,15 @@ export interface MainNavProps {
 
 export function MainNav({ items }: MainNavProps): React.JSX.Element {
 	const [openNav, setOpenNav] = React.useState<boolean>(false);
+	const theme = useTheme();
 
 	return (
 		<React.Fragment>
 			<Box
 				component="header"
 				sx={{
-					'--MainNav-background': 'var(--mui-palette-background-default)',
-					'--MainNav-divider': 'var(--mui-palette-divider)',
+					'--MainNav-background': theme.palette.mode === 'dark' ? 'rgba(15, 25, 35, 0.75)' : 'rgba(245, 250, 255, 0.9)',
+					'--MainNav-divider': 'rgba(90, 220, 220, 0.3)',
 					bgcolor: 'var(--MainNav-background)',
 					left: 0,
 					position: 'sticky',
@@ -48,6 +50,8 @@ export function MainNav({ items }: MainNavProps): React.JSX.Element {
 					top: 0,
 					width: '100%',
 					zIndex: 'var(--MainNav-zIndex)',
+					backdropFilter: 'blur(10px)',
+					boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
 				}}
 			>
 				<Box
@@ -101,11 +105,26 @@ export function MainNav({ items }: MainNavProps): React.JSX.Element {
 
 function SearchButton(): React.JSX.Element {
 	const dialog = useDialog();
+	const theme = useTheme();
 
 	return (
 		<React.Fragment>
 			<Tooltip title="Search">
-				<IconButton onClick={dialog.handleOpen} sx={{ display: { xs: 'none', lg: 'inline-flex' } }}>
+				<IconButton 
+					onClick={dialog.handleOpen} 
+					sx={{ 
+						display: { xs: 'none', lg: 'inline-flex' },
+						transition: 'all 0.2s',
+						'&:hover': {
+							backgroundColor: theme.palette.mode === 'dark'
+								? 'rgba(var(--mui-palette-primary-mainChannel), 0.15)'
+								: 'rgba(var(--mui-palette-primary-mainChannel), 0.08)',
+							boxShadow: theme.palette.mode === 'dark'
+								? '0 0 10px rgba(var(--mui-palette-primary-mainChannel), 0.5)'
+								: '0 0 8px rgba(var(--mui-palette-primary-mainChannel), 0.3)',
+						},
+					}}
+				>
 					<MagnifyingGlassIcon />
 				</IconButton>
 			</Tooltip>
@@ -116,11 +135,26 @@ function SearchButton(): React.JSX.Element {
 
 function ContactsButton(): React.JSX.Element {
 	const popover = usePopover<HTMLButtonElement>();
+	const theme = useTheme();
 
 	return (
 		<React.Fragment>
 			<Tooltip title="Contacts">
-				<IconButton onClick={popover.handleOpen} ref={popover.anchorRef}>
+				<IconButton 
+					onClick={popover.handleOpen} 
+					ref={popover.anchorRef}
+					sx={{ 
+						transition: 'all 0.2s',
+						'&:hover': {
+							backgroundColor: theme.palette.mode === 'dark'
+								? 'rgba(var(--mui-palette-primary-mainChannel), 0.15)'
+								: 'rgba(var(--mui-palette-primary-mainChannel), 0.08)',
+							boxShadow: theme.palette.mode === 'dark'
+								? '0 0 10px rgba(var(--mui-palette-primary-mainChannel), 0.5)'
+								: '0 0 8px rgba(var(--mui-palette-primary-mainChannel), 0.3)',
+						},
+					}}
+				>
 					<UsersIcon />
 				</IconButton>
 			</Tooltip>
@@ -131,16 +165,40 @@ function ContactsButton(): React.JSX.Element {
 
 function NotificationsButton(): React.JSX.Element {
 	const popover = usePopover<HTMLButtonElement>();
+	const theme = useTheme();
 
 	return (
 		<React.Fragment>
 			<Tooltip title="Notifications">
 				<Badge
 					color="error"
-					sx={{ '& .MuiBadge-dot': { borderRadius: '50%', height: '10px', right: '6px', top: '6px', width: '10px' } }}
+					sx={{ 
+						'& .MuiBadge-dot': { 
+							borderRadius: '50%', 
+							height: '10px', 
+							right: '6px', 
+							top: '6px', 
+							width: '10px',
+							boxShadow: '0 0 5px var(--mui-palette-error-main)'
+						} 
+					}}
 					variant="dot"
 				>
-					<IconButton onClick={popover.handleOpen} ref={popover.anchorRef}>
+					<IconButton 
+						onClick={popover.handleOpen} 
+						ref={popover.anchorRef}
+						sx={{ 
+							transition: 'all 0.2s',
+							'&:hover': {
+								backgroundColor: theme.palette.mode === 'dark'
+									? 'rgba(var(--mui-palette-primary-mainChannel), 0.15)'
+									: 'rgba(var(--mui-palette-primary-mainChannel), 0.08)',
+								boxShadow: theme.palette.mode === 'dark'
+									? '0 0 10px rgba(var(--mui-palette-primary-mainChannel), 0.5)'
+									: '0 0 8px rgba(var(--mui-palette-primary-mainChannel), 0.3)',
+							},
+						}}
+					>
 						<BellIcon />
 					</IconButton>
 				</Badge>
@@ -155,6 +213,7 @@ function LanguageSwitch(): React.JSX.Element {
 	const popover = usePopover<HTMLButtonElement>();
 	const language = (i18n.language || 'en') as Language;
 	const flag = languageFlags[language];
+	const theme = useTheme();
 
 	return (
 		<React.Fragment>
@@ -162,7 +221,18 @@ function LanguageSwitch(): React.JSX.Element {
 				<IconButton
 					onClick={popover.handleOpen}
 					ref={popover.anchorRef}
-					sx={{ display: { xs: 'none', lg: 'inline-flex' } }}
+					sx={{ 
+						display: { xs: 'none', lg: 'inline-flex' },
+						transition: 'all 0.2s',
+						'&:hover': {
+							backgroundColor: theme.palette.mode === 'dark'
+								? 'rgba(var(--mui-palette-primary-mainChannel), 0.15)'
+								: 'rgba(var(--mui-palette-primary-mainChannel), 0.08)',
+							boxShadow: theme.palette.mode === 'dark'
+								? '0 0 10px rgba(var(--mui-palette-primary-mainChannel), 0.5)'
+								: '0 0 8px rgba(var(--mui-palette-primary-mainChannel), 0.3)',
+						},
+					}}
 				>
 					<Box sx={{ height: '24px', width: '24px' }}>
 						<Box alt={language} component="img" src={flag} sx={{ height: 'auto', width: '100%' }} />
@@ -196,7 +266,17 @@ function UserButton(): React.JSX.Element {
 		  component="button"
 		  onClick={popover.handleOpen}
 		  ref={popover.anchorRef}
-		  sx={{ border: 'none', background: 'transparent', cursor: 'pointer', p: 0 }}
+		  sx={{ 
+			border: 'none', 
+			background: 'transparent', 
+			cursor: 'pointer', 
+			p: 0,
+			transition: 'all 0.2s',
+			borderRadius: '50%',
+			'&:hover': {
+				boxShadow: '0 0 15px rgba(var(--mui-palette-primary-mainChannel), 0.7)',
+			},
+		  }}
 		>
 		  <Badge
 			anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
@@ -209,11 +289,17 @@ function UserButton(): React.JSX.Element {
 				height: '12px',
 				right: '6px',
 				width: '12px',
+				boxShadow: '0 0 5px var(--mui-palette-success-main)'
 			  },
 			}}
 			variant="dot"
 		  >
-			<Avatar src={avatarUrl} />
+			<Avatar 
+				src={avatarUrl}
+				sx={{
+					border: '1px solid rgba(var(--mui-palette-primary-mainChannel), 0.3)',
+				}}
+			/>
 		  </Badge>
 		</Box>
 		<UserPopover anchorEl={popover.anchorRef.current} onClose={popover.handleClose} open={popover.open} />
