@@ -1,0 +1,27 @@
+{
+	"name": "@pyro/types",
+	"version": "1.0.0",
+	"description": "Type definitions for Pyro",
+	"main": "dist/index.js",
+	"module": "dist/index.mjs",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsup src/index.ts --format cjs,esm --dts",
+		"lint": "pnpm exec eslint ."
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/dotenv": "^8.2.3",
+		"tsup": "^8.0.1",
+		"typescript": "^5.2.2"
+	},
+	"dependencies": {
+		"@apollo/client": "^3.13.5",
+		"dotenv": "^16.4.7"
+	}
+}

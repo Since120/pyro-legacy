@@ -1,0 +1,27 @@
+schema: apps/server/src/schema.gql
+documents:
+  - 'apps/dashboard/src/**/*.graphql'
+  - 'apps/dashboard/src/**/*.tsx'  # Für gql-Tags in React-Komponenten
+  - 'apps/dashboard/src/**/*.ts'   # Für gql-Tags in TypeScript-Dateien
+generates:
+  packages/types/src/graphql-types.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      skipTypename: true
+      scalars:
+        DateTime: Date
+      enumsAsTypes: true
+      
+  # Index-Datei mit direktem Export
+  packages/types/src/index.ts:
+    plugins:
+      - add:
+          content: |
+            // Export aller Typen aus der generierten Datei
+            export * from './graphql-types';
+            
+            // Sicherstellen, dass DateTime korrekt behandelt wird
+            export type DateTime = Date;
