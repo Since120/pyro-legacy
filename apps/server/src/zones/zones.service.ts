@@ -123,9 +123,27 @@ export class ZonesService {
     console.log('Updating zone with input:', JSON.stringify(updateZoneInput, null, 2));
 
     // Stelle sicher, dass guild_id nicht 'default_guild' ist, wenn ein anderer Wert übergeben wurde
-    const data = {
-      ...inputData,
-      guild_id: inputData.guild_id || 'default_guild'
+    const data = { ...inputData };
+
+    // Wenn guild_id im Input enthalten ist und nicht 'default_guild' ist, verwende sie
+    if (inputData.guild_id && inputData.guild_id !== 'default_guild') {
+      console.log(`Using explicit guild_id from input: ${inputData.guild_id}`);
+      data.guild_id = inputData.guild_id;
+    } else {
+      // Hole die aktuelle guild_id aus der Datenbank
+      const existingZone = await this.prisma.zone.findUnique({
+        where: { id },
+        select: { guild_id: true }
+      });
+
+      if (existingZone && existingZone.guild_id !== 'default_guild') {
+        console.log(`Using existing guild_id from database: ${existingZone.guild_id}`);
+        data.guild_id = existingZone.guild_id;
+      } else if (inputData.guild_id) {
+        // Wenn die guild_id im Input 'default_guild' ist, verwende sie
+        console.log(`Using default_guild from input`);
+        data.guild_id = inputData.guild_id;
+      }
     };
 
     console.log('Final data for zone update:', JSON.stringify(data, null, 2));

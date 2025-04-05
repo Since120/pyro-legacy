@@ -108,6 +108,12 @@ importers:
       '@pyro/types':
         specifier: workspace:*
         version: link:../../packages/types
+      '@types/cors':
+        specifier: ^2.8.17
+        version: 2.8.17
+      cors:
+        specifier: ^2.8.5
+        version: 2.8.5
       discord.js:
         specifier: ^14.18.0
         version: 14.18.0
@@ -3482,6 +3488,9 @@ packages:
 
   '@types/cookiejar@2.1.5':
     resolution: {integrity: sha512-he+DHOWReW0nghN24E1WUqM0efK4kI9oTqDm6XmK8ZPe2djZ90BSNdGnIyCLzCPw7/pogPlGbzI2wHGGmi4O/Q==}
+
+  '@types/cors@2.8.17':
+    resolution: {integrity: sha512-8CGDvrBj1zgo2qE+oS3pOCyYNqCPryMWY2bGfwA0dcfopWGgxs+78df0Rs3rc9THP4JkOhLsAa+15VdpAqkcUA==}
 
   '@types/d3-array@3.2.1':
     resolution: {integrity: sha512-Y2Jn2idRrLzUfAKV2LyRImR+y4oa2AntrgID95SHJxuMUrkNXmanDSed71sRNZysveJVt1hLLemQZIady0FpEg==}
@@ -12398,6 +12407,10 @@ snapshots:
   '@types/cookie@0.6.0': {}
 
   '@types/cookiejar@2.1.5': {}
+
+  '@types/cors@2.8.17':
+    dependencies:
+      '@types/node': 22.13.11
 
   '@types/d3-array@3.2.1': {}
 

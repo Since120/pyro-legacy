@@ -65,13 +65,22 @@ let CategoriesService = class CategoriesService {
         const { id: omitId, ...inputData } = updateCategoryInput;
         console.log('Updating category with input:', JSON.stringify(updateCategoryInput, null, 2));
         const data = { ...inputData };
-        if (!inputData.guild_id) {
+        if (inputData.guild_id && inputData.guild_id !== 'default_guild') {
+            console.log(`Using explicit guild_id from input: ${inputData.guild_id}`);
+            data.guild_id = inputData.guild_id;
+        }
+        else {
             const existingCategory = await this.prisma.category.findUnique({
                 where: { id },
                 select: { guild_id: true }
             });
-            if (existingCategory) {
+            if (existingCategory && existingCategory.guild_id !== 'default_guild') {
+                console.log(`Using existing guild_id from database: ${existingCategory.guild_id}`);
                 data.guild_id = existingCategory.guild_id;
+            }
+            else if (inputData.guild_id) {
+                console.log(`Using default_guild from input`);
+                data.guild_id = inputData.guild_id;
             }
         }
         console.log('Final data for category update:', JSON.stringify(data, null, 2));

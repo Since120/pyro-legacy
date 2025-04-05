@@ -96,10 +96,26 @@ let ZonesService = class ZonesService {
     async update(id, updateZoneInput) {
         const { id: _, ...inputData } = updateZoneInput;
         console.log('Updating zone with input:', JSON.stringify(updateZoneInput, null, 2));
-        const data = {
-            ...inputData,
-            guild_id: inputData.guild_id || 'default_guild'
-        };
+        const data = { ...inputData };
+        if (inputData.guild_id && inputData.guild_id !== 'default_guild') {
+            console.log(`Using explicit guild_id from input: ${inputData.guild_id}`);
+            data.guild_id = inputData.guild_id;
+        }
+        else {
+            const existingZone = await this.prisma.zone.findUnique({
+                where: { id },
+                select: { guild_id: true }
+            });
+            if (existingZone && existingZone.guild_id !== 'default_guild') {
+                console.log(`Using existing guild_id from database: ${existingZone.guild_id}`);
+                data.guild_id = existingZone.guild_id;
+            }
+            else if (inputData.guild_id) {
+                console.log(`Using default_guild from input`);
+                data.guild_id = inputData.guild_id;
+            }
+        }
+        ;
         console.log('Final data for zone update:', JSON.stringify(data, null, 2));
         if (data.categoryId) {
             const categoryExists = await this.prisma.category.findUnique({
